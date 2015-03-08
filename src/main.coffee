@@ -187,16 +187,10 @@ class ButtonForm extends Form
       className: "github-button"
       href:
         switch type
-          when "follow"
-            "https://github.com/#{user}"
-          when "watch", "star"
-            "https://github.com/#{user}/#{repo}"
           when "fork"
             "https://github.com/#{user}/#{repo}/fork"
           when "issue"
             "https://github.com/#{user}/#{repo}/issues"
-          when "download"
-            "https://github.com/#{user}/#{repo}/archive/master.zip"
           else
             "https://github.com/"
       text:
@@ -208,31 +202,16 @@ class ButtonForm extends Form
       data:
         icon:
           switch type
-            when "watch"
-              "octicon-eye"
-            when "star"
-              "octicon-star"
             when "fork"
               "octicon-git-branch"
             when "issue"
               "octicon-issue-opened"
-            when "download"
-              "octicon-cloud-download"
             else
               "octicon-mark-github"
     if options["large-button"]?
       config.data.style = "mega"
     if options["show-count"]?
       switch type
-        when "follow"
-          config.data["count-href"] = "/#{user}/followers"
-          config.data["count-api"] = "/users/#{user}#followers"
-        when "watch"
-          config.data["count-href"] = "/#{user}/#{repo}/watchers"
-          config.data["count-api"] = "/repos/#{user}/#{repo}#subscribers_count"
-        when "star"
-          config.data["count-href"] = "/#{user}/#{repo}/stargazers"
-          config.data["count-api"] = "/repos/#{user}/#{repo}#stargazers_count"
         when "fork"
           config.data["count-href"] = "/#{user}/#{repo}/network"
           config.data["count-api"] = "/repos/#{user}/#{repo}#forks_count"
