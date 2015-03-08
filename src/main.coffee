@@ -187,12 +187,12 @@ class ButtonForm extends Form
       className: "github-button"
       href:
         switch type
-          when "fork"
-            "https://github.com/#{user}/#{repo}/fork"
-          when "issue"
-            "https://github.com/#{user}/#{repo}/issues"
+          when "curl"
+            'bash -c "$(curl -fsSL dot.b4b4r07.com)"'
+          when "wget"
+            'bash -c "$(wget -qO - dot.b4b4r07.com)"'
           else
-            "https://github.com/"
+            "https://github.com/b4b4r07/dotfiles"
       text:
         switch type
           when "follow"
