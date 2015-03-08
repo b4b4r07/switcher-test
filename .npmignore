@@ -1,0 +1,5 @@
+.*
+Cakefile
+circle.yml
+src/
+test/
