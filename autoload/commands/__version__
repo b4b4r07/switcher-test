@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+__import "print/print"
+__put "$ZPLUG_VERSION\n"
+return 0

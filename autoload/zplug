@@ -1,0 +1,51 @@
+#!/bin/zsh
+
+local arg
+
+# Initialize
+source "$ZPLUG_ROOT/autoload/init.zsh"
+__import "print/print"
+
+arg="$1"
+case "$arg" in
+    help | version)
+        __${arg}__
+        return $status
+        ;;
+
+    check | install | status)
+        shift
+        __${arg}__ "$@" ${(k)zplugs}
+        return $status
+        ;;
+
+    clean | clear | list | load)
+        shift
+        __${arg}__ "$@"
+        return $status
+        ;;
+
+    update)
+        shift
+        __${arg}__ ${@:-${(k)zplugs}}
+        return $status
+        ;;
+
+    "")
+        ;;
+
+    */*)
+        __add__ "$@"
+        return $status
+        ;;
+
+    *)
+        if (( $+commands[zplug-$arg] )); then
+            eval "$commands[zplug-$arg]"
+            return $status
+        else
+            __die "$arg: no such command\n"
+            return 1
+        fi
+        ;;
+esac

@@ -1,0 +1,121 @@
+#!/bin/zsh
+
+__import "print/print"
+__import "core/core"
+
+local    k v arg filter repo
+local -i fail=0 num
+local -a repos args remove_args
+local -A zspec
+local    is_force=false is_select=false
+
+while (( $# > 0 ))
+do
+    case "$1" in
+        --force)
+            is_force=true
+            ;;
+        --select)
+            is_select=true
+            ;;
+        -*|--*)
+            __die "$1: Unknown option\n"
+            return 1
+            ;;
+        *)
+            args+=("$1")
+    esac
+    shift
+done
+
+clean_deadlinks() {
+    local link
+    for link in $ZPLUG_HOME/bin/*(N@)
+    do
+        if [[ -L $link ]] && [[ ! -e $link ]]; then
+            command rm -f "$link"
+        fi
+    done
+}
+
+# Note:
+# How to remove elements from ordinary array or associative array
+# ordinary array   : array[num]=() or shift 1 array <= overwrite empty element or shift command
+# associative array: unset "array[key]"             <= unset array with double quotes
+filter="$(__get_filter "$ZPLUG_FILTER")"
+if $is_select; then
+    args=(${(@f)"$(echo "${(Fk)zplugs}" | eval "$filter")"})
+    (( $#args == 0 )) && return 0
+# else
+#     args=("$@")
+fi
+
+if (( $#args > 0 )); then
+    for arg in "${args[@]}"
+    do
+        zspec=( ${(@f)"$(__parser__ "$arg")"} )
+
+        if [[ -e $zspec[dir] ]]; then
+            __put "- \033[31m%s\033[m\n" "$arg"
+            if [[ $zspec[from] == "oh-my-zsh" ]]; then
+                remove_args+=("$ZPLUG_HOME/repos/$_zplug_omz_repo")
+            else
+                remove_args+=("$ZPLUG_HOME/repos/$arg")
+            fi
+        else
+            __die "%s: not managed by zplug\n" "$arg"
+            let fail++
+        fi
+    done
+
+    if (( fail > 0 )); then
+        return 1
+    fi
+
+    __put "Remove really? [y/N]: "
+    if $is_force || read -q; then
+        rm -rf "${(u)remove_args[@]}"
+        rmdir "${(u)remove_args[@]:h}" 2>/dev/null
+        clean_deadlinks
+        __put "\nRemoved\n"
+    else
+        __put "\nCanceled\n"
+    fi
+
+else
+    repos=("${(@f)$(find "$ZPLUG_HOME/repos" -maxdepth 2 -mindepth 2)}")
+
+    # Remove the repository which is used from the candidates
+    for v in "${(@v)zplugs}"
+    do
+        k="${${v##*dir:}%%, *}"
+        if [[ $k =~ $_zplug_omz_repo ]]; then
+            k=$ZPLUG_HOME/repos/$_zplug_omz_repo
+        fi
+        num="${repos[(i)$k]}"
+        if [[ -n "$num" ]]; then
+            repos[$num]=()
+        fi
+    done
+
+    [[ -z ${repos[1]} ]] && return
+
+    __put "\033[;1mThese repositories are no longer managed by zplug.\033[m\n"
+    __put "- \033[31m%s\033[m\n" "${repos[@]}"
+    __put "Remove? [y/N]: "
+    if $is_force || read -q; then
+        rm -rf "${repos[@]}"
+        rmdir "${repos[@]:h}" 2>/dev/null
+        clean_deadlinks
+        __put "\nRemoved\n"
+    else
+        __put "\nCanceled\n"
+    fi
+fi
+
+for repo in ${(k)zplugs}
+do
+    if [[ ! -e ${${zplugs[$repo]##*dir:}%%, *} ]]; then
+        unset "zplugs[$repo]"
+    fi
+done

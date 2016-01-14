@@ -1,0 +1,27 @@
+#!/bin/zsh
+
+__import "print/print"
+
+local is_force=false
+
+while (( $# > 0 ))
+do
+    case "$1" in
+        --force)
+            is_force=true
+            ;;
+        -*|--*)
+            __die "$1: Unknown option\n"
+            return 1
+            ;;
+    esac
+    shift
+done
+
+__put "Remove cache file? [y/N]: "
+if $is_force || read -q; then
+    rm -f $ZPLUG_CACHE_FILE
+    __put "\nRemoved\n"
+else
+    __put "\nCanceled\n"
+fi

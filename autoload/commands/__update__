@@ -1,0 +1,167 @@
+#!/bin/zsh
+
+__import "core/core"
+__import "job/spinner"
+__import "print/print"
+__import "print/logger"
+
+trap '__spin_unlock; trap - SIGINT' SIGINT
+
+local    line filter is_select=false
+local -i cnt=0 max=0 ret
+local -a args
+local -a queue
+local -i queue_max=$ZPLUG_THREADS
+local -F SECONDS=0
+
+case "$1" in
+    --self)
+        __self__
+        return $status
+        ;;
+    --select)
+        is_select=true; shift
+        ;;
+    -*|--*)
+        __die "$1: Unknown option\n"
+        return 1
+        ;;
+esac
+
+{
+    filter="$(__get_filter "$ZPLUG_FILTER")"
+    if $is_select; then
+        args=(${(@f)"$(echo "${(Fk)zplugs}" | eval "$filter")"})
+    else
+        args=(${(u)${@:gs:@::}})
+    fi
+    for line in "${args[@]}"; do
+        (( $#line > max )) && max=$#line
+    done
+}
+
+if (( $#args == 0 )); then
+    __list__
+    return $status
+fi
+
+__spin_lock
+__spinner &
+for line in "${args[@]}"
+do
+    # Run installation in subprocess
+    {
+        # All variables are treated as local variable
+        # because of background job (subprocess)
+        local    k ret=1
+        local -A zspec
+        zspec=( ${(@f)"$(__parser__ "$line")"} )
+        for k in ${(k)zspec}
+        do
+            if [[ $zspec[$k] == "-EMP-" ]]; then
+                zspec[$k]=""
+            fi
+        done
+        [[ $zspec[from] == "local" ]] && continue
+
+        # Not update
+        if [[ $zspec[frozen] -eq 1 ]]; then
+            if [[ ${#@} -eq 1 && ${@[1]} == $zspec[name] ]]; then
+                __spinner_echo "\033[32m$zspec[name]\033[m: \033[34mfrozen repo\033[m. Update? [y/N]: "
+                if ! read -q; then
+                    continue
+                fi
+                echo
+            else
+                # Frozen!!
+                __spinner_echo " \033[34m* Frozen\033[m    $line\n"
+                continue
+            fi
+        fi
+
+        __spinner_echo "Updating...  $line\n"
+
+        function () {
+            # Change directory to fullpath of zspec dir
+            # or parent directory of zspec dir
+            # If it fails, return this unnamed function with error code 2
+            builtin cd -q $zspec[dir] || builtin cd ${zspec[dir]%/*} || return 2
+
+            # If zspec from is gh-r (GitHub Releases),
+            # send a http request to git.io/releases with os argument
+            # or, git pull (case of normal plugin)
+            if [[ $zspec[from] == "gh-r" ]]; then
+                __releases__ \
+                    --of "${zspec[of]:-}" \
+                    --do "${zspec[do]:-}" \
+                    --at "${zspec[at]:-}" \
+                    "$line" &>/dev/null
+            else
+                local fetch_opt
+                if [[ -e $zspec[dir]/.git/shallow ]]; then
+                    fetch_opt='--unshallow'
+                fi
+                git fetch $fetch_opt
+                git checkout -q $zspec[at]
+
+                local rev_local rev_remote rev_base
+                rev_local=$(git rev-parse HEAD)
+                rev_remote=$(git rev-parse "@{u}")
+                rev_base=$(git merge-base HEAD "@{u}")
+
+                if [[ $rev_local == $rev_remote ]]; then
+                    # up-to-date
+                    return 128
+                elif [[ $rev_local = $rev_base ]]; then
+                    # need to pull
+                    git merge --ff-only origin/$zspec[at] && git submodule update --init --recursive
+                    return $status
+                elif [ $rev_remote = $rev_base ]; then
+                    # need to push
+                    return 1
+                else
+                    # Diverged
+                    return 1
+                fi
+            fi
+        } >/dev/null 2>&1
+        # Return code of above unnamed function
+        # Incidentally,
+        # nothing is output even if it success or fails
+        ret=$status
+
+        if [[ -n $zspec[do] ]]; then
+            if [[ $ret -eq 0 ]]; then
+                eval "$zspec[do]"
+            fi
+        fi
+
+        case $ret in
+            0)
+                __spinner_echo "\033[32mUpdated!\033[m     %-${max}s\t(%.2fs)\n" "$line" $SECONDS
+                ;;
+            1)
+                __spinner_echo "\033[31mNot Updated\033[m  %-${max}s\t(%.2fs)\n" "$line" $SECONDS
+                ;;
+            2)
+                # Simple manual synchronous processing
+                sleep 1
+                # Output in magenta
+                # and SECONDS-1 (sleep 1)
+                __spinner_echo "\033[35mNot Found\033[m    %-${max}s\t(%.2fs)\n" "$line" $((SECONDS-1))
+                ;;
+            128)
+                __spinner_echo "%s   %-${max}s\t(%.2fs)\n" $(__ink --color white "Up-to-date") "$line" $SECONDS
+                ;;
+        esac
+    } &
+    queue+=($!)
+    if (( $#queue % queue_max == 0 )); then
+        wait $queue
+        queue=()
+    fi
+done
+wait $queue
+queue=()
+
+__spin_unlock

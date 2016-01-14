@@ -1,0 +1,23 @@
+#!/bin/zsh
+
+__import "print/print"
+
+local main
+main="b4b4r07/zplug"
+
+__put "\033[;1m * zplug self management\033[m\n"
+
+if __check__ "$main"; then
+    __update__ "$main"
+else
+    __add__ "$main" &>/dev/null
+    ZPLUG_SHALLOW=false __install__ "$main"
+fi
+
+ln -snf "$ZPLUG_HOME/repos/$main/zplug.zsh" "$ZPLUG_HOME/zplug.zsh"
+if [[ $status -eq 0 && -d $ZPLUG_HOME/repos/b4b4r07/zplug && -f $ZPLUG_HOME/zplug ]]; then
+    __put "\033[32mEverything is ready. \033[;1m($ZPLUG_HOME/zplug)\033[m\n"
+else
+    __die "\033[31mError occured (see $ZPLUG_URL)\033[m\n"
+    return 1
+fi

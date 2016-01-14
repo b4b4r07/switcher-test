@@ -1,0 +1,140 @@
+#!/bin/zsh
+
+__import "core/core"
+__import "print/print"
+__import "job/spinner"
+
+local    line job filter key
+local    is_verbose=false is_select=false
+local -a args check
+local    oh_my_line oh_my_count=0
+local -A zspec
+local -i cnt=0 max=0 fail=0
+local -F SECONDS=0
+local -F start end
+local -a queue
+local -i queue_max=$ZPLUG_THREADS
+
+case "$1" in
+    --verbose)
+        is_verbose=true; shift
+        ;;
+    --select)
+        is_select=true; shift
+        ;;
+    -*|--*)
+        __die "$1: Unknown option\n"
+        return 1
+        ;;
+esac
+
+# Initialize
+{
+    # [[ -d $ZPLUG_HOME/repos ]] || mkdir -p "$ZPLUG_HOME/repos"
+    start=$SECONDS
+    filter="$(__get_filter "$ZPLUG_FILTER")"
+    if $is_select; then
+        args=(${(@f)"$(echo "${(F)@}" | eval "$filter")"})
+    else
+        args=(${(u)${@:gs:@::}})
+    fi
+
+    for line in "${args[@]}"; do
+        (( $#line > $max )) && max=$#line
+    done
+}
+
+if (( $#args == 0 )); then
+    __list__
+    return $status
+fi
+
+for line in "${args[@]}"
+do
+    # Parse line
+    zspec=( ${(@f)"$(__parser__ "$line")"} )
+    for key in ${(k)zspec}
+    do
+        if [[ $zspec[$key] == "-EMP-" ]]; then
+            zspec[$key]=""
+        fi
+    done
+
+    # Skip installed items
+    [[ $zspec[from] == "local" ]] && continue
+    if [[ -e $ZPLUG_HOME/repos/$line ]] || [[ $zspec[from] == "oh-my-zsh" && -d $ZPLUG_HOME/repos/$_zplug_omz_repo/$line ]]; then
+        if $is_verbose; then
+            __put "\033[31m-\033[m \033[32m${line}\033[m: already installed\n"
+        fi
+        continue
+    fi
+
+    # For checking
+    check+=($zspec[dir])
+
+    # Case of oh-my-zsh
+    oh_my_line=""
+    if [[ $zspec[from] == "oh-my-zsh" ]]; then
+        (( oh_my_count++ > 0 )) && continue
+        [[ -d $ZPLUG_HOME/repos/$_zplug_omz_repo ]] && continue
+        oh_my_line="$_zplug_omz_repo"
+    fi
+
+    __spin_lock
+    __spinner &
+    # Run installation in subprocess
+    {
+        trap '__spin_unlock; trap - SIGINT' SIGINT
+
+        # All variables are treated as local variable
+        # because of background job (subprocess)
+        local -i ret
+        local -F SECONDS=0
+
+        __spinner_echo "Installing...  ${oh_my_line:-$line}\n"
+
+        # builtin cd -q "$ZPLUG_HOME/repos" &>/dev/null
+        __clone__ \
+            --of     ${zspec[of]:-""} \
+            --commit ${zspec[commit]:-""} \
+            --from   ${zspec[from]:-""} \
+            --at     ${zspec[at]:-""} \
+            --do     ${zspec[do]:-""} \
+            "$line"
+        ret=$status
+
+        if [[ $ret -eq 0 ]]; then
+            __spinner_echo "\033[32mInstalled!\033[m     %-${max}s\t(%.2fs)\n" "${oh_my_line:-$line}" $SECONDS
+        else
+            __spinner_echo "\033[31mNot Installed\033[m  %-${max}s\t(%.2fs)\n" "${oh_my_line:-$line}" $SECONDS
+        fi
+    } &
+    queue+=($!)
+    if (( $#queue % queue_max == 0 )); then
+        wait $queue
+        queue=()
+    fi
+done
+wait $queue
+queue=()
+
+# Skip footer prints
+if (( $#check == 0 )); then
+    return 0
+fi
+
+for line in "${check[@]}"; do
+    [[ -e $line ]] || let fail++
+done
+if [[ $fail -eq 0 ]]; then
+    __put "\033[;1m ==> Installed all plugins to $ZPLUG_HOME/repos, successfully!\033[m\n"
+else
+    __die "\033[31;1m ==> Installed to $ZPLUG_HOME/repos but failed.\033[m\n"
+fi
+
+end=$SECONDS
+
+__spin_unlock
+__put "$ZPLUG_NAME: total wall-time %f sec.\n" $(($end - $start))
+
+return $fail

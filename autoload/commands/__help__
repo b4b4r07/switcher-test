@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+__import "print/print"
+__die "$ZPLUG_HELP\n"
+return 1

@@ -1,0 +1,68 @@
+#!/bin/zsh
+
+__import "core/core"
+__import "print/print"
+
+if (( $#zplugs < 1 )); then
+    __die "$ZPLUG_NAME: there is no available plugins\n"
+    return 1
+fi
+
+local    v arg is_select=false filter
+local -a args awk_args
+local -A out
+
+for v in "${(@nO)zplugs}"
+do
+    out+=("${(@kv)zplugs[(eR)$v]}")
+done
+
+case "$1" in
+    --select)
+        is_select=true
+        shift
+        ;;
+    -*|--*)
+        __die "$1: Unknown option\n"
+        return 1
+        ;;
+esac
+
+filter="$(__get_filter "$ZPLUG_FILTER")"
+if $is_select; then
+    args=(${(@f)"$(echo "${(Fk)zplugs}" | eval "$filter")"})
+    (( $#args == 0 )) && return 0
+else
+    args=("$@")
+fi
+
+if (( $#args > 0 )); then
+    out=()
+    for arg in "${args[@]}"
+    do
+        if (( $+zplugs[$arg] )); then
+            # This is compelte match
+            out+=("$arg" "${zplugs[$arg]}")
+        else
+            # Fuzzy match with awk
+            awk_args=(${(@f)"$(awk -v arg=$arg '$1 ~ arg' <<<${(Fk)zplugs})"})
+            for arg in ${awk_args[@]}
+            do
+                if (( $+zplugs[$arg] )); then
+                    out+=("$arg" "${zplugs[$arg]}")
+                fi
+            done
+        fi
+    done
+fi
+
+if (( $#out < 1 )); then
+    __die "$arg: not found in \$zplugs\n"
+    return 1
+fi
+__put '%s  =>  %s\n' "${(@kv)out:gs:@::}" \
+    | sed -e 's/-EMP-/""/g' \
+    | perl -pe 's/^(.*)( *=>.*)$/\033[32m$1\033[m$2/g' \
+    | perl -pe 's/'"$_zplug_tag_pattern"'(:)/\033[34m$1\033[m$2/g'
+
+    # | perl -pe 's/('"$_zplug_tag_pattern"')(:)/\033[34m$1\033[m$2/g'
