@@ -125,15 +125,15 @@ describe "__releases__"
     it "--at option Not Update"
         __get_os() { __put "linux\n" }
         repo="peco/peco"
-        echo "v0.3.1" >|"$zplug_home/repos/$repo/INDEX"
-        cat "$zplug_home/repos/$repo/INDEX"
+        echo "v0.3.1" >|"$ZPLUG_HOME/repos/$repo/INDEX"
+        cat $ZPLUG_HOME/repos/$repo/INDEX"
         expect=""
         actual="$(
         __releases__ \
             --at "v0.3.5" \
             "$repo" 2>&1
         )"
-        cat "$zplug_home/repos/$repo/INDEX"
+        cat $ZPLUG_HOME/repos/$repo/INDEX"
         status_code=$status
         assert.equals "$expect" "$actual"
         assert.equals 128 $status_code
