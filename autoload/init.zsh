@@ -22,7 +22,5 @@ do
     autoload -Uz "$f"
 done
 
-autoload -Uz add-zsh-hook
-
 # autoload -Uz add-zsh-hook
 # autoload -Uz compinit; compinit

@@ -50,6 +50,7 @@ __spinner() {
     done
     tput cnorm
     awk 'END { fflush() }'
+    set -m
 }
 
 __spinner_echo() {

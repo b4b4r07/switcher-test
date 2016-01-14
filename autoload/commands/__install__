@@ -115,7 +115,9 @@ do
         queue=()
     fi
 done
-wait $queue
+if (( $#queue > 0 )); then
+    wait $queue
+fi
 queue=()
 
 # Skip footer prints
