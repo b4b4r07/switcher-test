@@ -130,7 +130,6 @@ describe "__releases__"
         expect=""
         actual="$(
         __releases__ \
-            --at "v0.3.5" \
             "$repo" 2>&1
         )"
         status_code=$status

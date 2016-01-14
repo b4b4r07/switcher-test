@@ -103,7 +103,7 @@ done
             echo "${one_uri:h:t}" >"$repo/INDEX"
         fi
         index="$(<"$repo/INDEX")"
-        if grep "$index" <<<"$one_uri"; then
+        if grep -q "$index" <<<"$one_uri"; then
             # up-to-date
             return 1
         fi
