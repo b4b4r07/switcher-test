@@ -152,6 +152,7 @@ done
         ret=1
     fi
     # builtin cd -q "$OLDPWD"
+    rm "$repo/INDEX"
     echo "${one_uri:h:t}" >"$repo/INDEX"
 
     if [[ -n $tag_do ]]; then
