@@ -3,7 +3,7 @@
 source "$ZPLUG_ROOT/lib/init.zsh"
 
 __import "core/core"
-__import "cli/cli"
+__import "cli/variable"
 __import "job/job"
 
 local    f
