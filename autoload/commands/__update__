@@ -155,13 +155,17 @@ do
                 ;;
         esac
     } &
+    # set -x
     queue+=($!)
     if (( $#queue % queue_max == 0 )); then
         wait $queue
         queue=()
     fi
 done
-wait $queue
+if (( $#queue > 0 )); then
+    wait $queue
+fi
 queue=()
+# set +x
 
 __spin_unlock

@@ -107,35 +107,6 @@ describe "__releases__"
         # Do Not Run
         # each_after
     end
-
-    it "--at option Up-to-date"
-        __get_os() { __put "linux\n" }
-        repo="peco/peco"
-        expect=""
-        actual="$(
-        __releases__ \
-            --at "v0.3.5" \
-            "$repo" 2>&1
-        )"
-        status_code=$status
-        assert.equals "$expect" "$actual"
-        assert.false $status_code
-    end
-
-    # it "--at option Not Update"
-    #     __get_os() { __put "linux\n" }
-    #     repo="peco/peco"
-    #     rm "$ZPLUG_HOME/repos/$repo/INDEX"
-    #     echo "v0.3.1" >"$ZPLUG_HOME/repos/$repo/INDEX"
-    #     expect=""
-    #     actual="$(
-    #     __releases__ \
-    #         "$repo" 2>&1
-    #     )"
-    #     status_code=$status
-    #     assert.equals "$expect" "$actual"
-    #     assert.equals 128 $status_code
-    # end
 end
 
 : after

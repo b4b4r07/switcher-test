@@ -99,21 +99,39 @@ done
     repo="$ZPLUG_HOME/repos/$repository"
     command_name="${repo:t}"
     if [[ -d $repo ]]; then
-        if [[ ! -f $repo/index ]]; then
-            echo "${one_uri:h:t}" >"$repo/INDEX"
-        fi
+        # Update
         index="$(<"$repo/INDEX")"
         if grep -q "$index" <<<"$one_uri"; then
             # up-to-date
-            return 1
-        fi
-        if [[ $tag_at != "latest" ]]; then
-            # up-to-date
             return 128
+        else
+            if [[ $tag_at == "latest" ]]; then
+                :
+            else
+                return 1
+            fi
         fi
     else
+        # Not update
         mkdir -p "$repo"
     fi
+
+    # if [[ -d $repo ]]; then
+    #     if [[ ! -f $repo/index ]]; then
+    #         echo "${one_uri:h:t}" >"$repo/INDEX"
+    #     fi
+    #     index="$(<"$repo/INDEX")"
+    #     if grep -q "$index" <<<"$one_uri"; then
+    #         # up-to-date
+    #         return 1
+    #     fi
+    #     if [[ $tag_at != "latest" ]]; then
+    #         # up-to-date
+    #         return 128
+    #     fi
+    # else
+    #     mkdir -p "$repo"
+    # fi
 }
 
 # Finalize
