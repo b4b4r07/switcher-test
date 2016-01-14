@@ -96,6 +96,7 @@ done
     fi
 
     # For updating
+    set -x
     repo="$ZPLUG_HOME/repos/$repository"
     command_name="${repo:t}"
     if [[ -d $repo ]]; then
@@ -114,6 +115,7 @@ done
     else
         mkdir -p "$repo"
     fi
+    set +x
 }
 
 # Finalize
@@ -152,7 +154,6 @@ done
         ret=1
     fi
     # builtin cd -q "$OLDPWD"
-    rm "$repo/INDEX"
     echo "${one_uri:h:t}" >"$repo/INDEX"
 
     if [[ -n $tag_do ]]; then
