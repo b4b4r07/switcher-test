@@ -125,7 +125,7 @@ describe "__releases__"
     it "--at option Not Update"
         __get_os() { __put "linux\n" }
         repo="peco/peco"
-        echo "v0.3.1">| "$ZPLUG_HOME/repos/$repo/INDEX"
+        echo "v0.3.1" >|"$ZPLUG_HOME/repos/$repo/INDEX"
         expect=""
         actual="$(
         __releases__ \
