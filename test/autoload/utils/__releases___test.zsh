@@ -56,8 +56,6 @@ describe "__releases__"
         assert.true $status_code
         expect="v0.3.5"
         actual="$(cat $ZPLUG_HOME/repos/$repo/INDEX)"
-        ls -l $ZPLUG_HOME/repos/$repo
-        echo $actual
         assert.equals "$expect" "$actual"
         each_after
     end

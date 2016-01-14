@@ -32,36 +32,36 @@ describe "__list__"
         ZPLUG_FILTER="head -1"
         expect="b4b4r07/zplug"
         actual="$(zplug list --select 2>&1 | perl -pe 's/\x1b\[[0-9;]*m//g')"
-        status_code=$pipestatus[1]
+        # status_code=$pipestatus[1]
         assert.match "$expect" "$actual"
-        assert.true $status_code
+        # assert.true $status_code
     end
 
     it "argument repo"
         zplugs=("b4b4r07/zplug" "as:plugin")
         expect="b4b4r07/zplug"
         actual="$(zplug list b4b4r07/zplug 2>&1 | perl -pe 's/\x1b\[[0-9;]*m//g')"
-        status_code=$pipestatus[1]
+        # status_code=$pipestatus[1]
         assert.match "$expect" "$actual"
-        assert.true $status_code
+        # assert.true $status_code
     end
 
     it "argument repo 2"
         zplugs=("b4b4r07/zplug" "as:plugin")
         expect="b4b4r07/zplug"
         actual="$(zplug list b4 2>&1 | perl -pe 's/\x1b\[[0-9;]*m//g')"
-        status_code=$pipestatus[1]
+        # status_code=$pipestatus[1]
         assert.match "$expect" "$actual"
-        assert.true $status_code
+        # assert.true $status_code
     end
 
     it "argument repo 3"
         zplugs=("b4b4r07/zplug" "as:plugin")
         expect="b5: not found"
         actual="$(zplug list b5 2>&1 | perl -pe 's/\x1b\[[0-9;]*m//g')"
-        status_code=$pipestatus[1]
+        # status_code=$pipestatus[1]
         assert.match "$expect" "$actual"
-        assert.true $status_code
+        # assert.true $status_code
     end
 
     it "multiple args"
@@ -72,18 +72,18 @@ describe "__list__"
         expect="b4b4r07/enhancd  =>  as:plugin
 b4b4r07/zplug  =>  as:plugin"
         actual="$(zplug list "zpl" "enh" 2>&1 | perl -pe 's/\x1b\[[0-9;]*m//g')"
-        status_code=$pipestatus[1]
+        # status_code=$pipestatus[1]
         assert.match "$expect" "$actual"
-        assert.true $status_code
+        # assert.true $status_code
     end
 
     it "no argument"
         zplugs=("b4b4r07/zplug" "as:plugin")
         expect="b4b4r07/zplug"
         actual="$(zplug list 2>&1 | perl -pe 's/\x1b\[[0-9;]*m//g')"
-        status_code=$pipestatus[1]
+        # status_code=$pipestatus[1]
         assert.match "$expect" "$actual"
-        assert.true $status_code
+        # assert.true $status_code
     end
 end
 

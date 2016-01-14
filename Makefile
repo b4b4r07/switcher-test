@@ -6,6 +6,6 @@ all:
 test:
 	@test -f $(PWD)/bin/zspec || curl -L $(ZSPEC_URL) -o $(PWD)/bin/zspec
 	@test -x $(PWD)/bin/zspec || chmod 755 $(PWD)/bin/zspec
-	@ZPLUG_ROOT=$(PWD) $(PWD)/bin/zspec --verbose "$(PWD)/test/**/*_test.zsh"
+	@ZPLUG_ROOT=$(PWD) $(PWD)/bin/zspec "$(PWD)/test/**/*_test.zsh"
 
 .PHONY: test
