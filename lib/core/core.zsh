@@ -116,7 +116,8 @@ __glob2regexp() {
     fi
 
     printf "^"
-    for ((; i < ${#glob}; i++)); do
+    for ((; i < ${#glob}; i++))
+    do
         char="${glob:$i:1}"
         case $char in
             \*)
@@ -147,3 +148,15 @@ __glob2regexp() {
     done
     printf "$\n"
 }
+
+__remove_deadlinks() {
+    local link
+
+    for link in "$@"
+    do
+        if [[ -L $link ]] && [[ ! -e $link ]]; then
+            command rm -f "$link"
+        fi
+    done
+}
+

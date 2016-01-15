@@ -173,6 +173,9 @@ describe "lib/core/core.zsh"
         actual="^a..b$"
         assert.equals "$expect" "$actual"
     end
+
+    it "__remove_deadlinks"
+    end
 end
 
 : after

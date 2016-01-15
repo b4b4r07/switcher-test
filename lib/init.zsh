@@ -10,7 +10,8 @@ ZPLUG_LIBS=()
 __import() {
     local f arg is_debug=false
 
-    while (( $# > 0 )); do
+    while (( $# > 0 ))
+    do
         arg="$1"
         case "$arg" in
             --debug)

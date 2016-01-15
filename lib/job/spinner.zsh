@@ -28,12 +28,8 @@ __spinner() {
     format="@\r"
     latency=0.03
 
-    while __is_spin; do
-        # if ! __is_spin; then
-        #     tput cnorm
-        #     break
-        # fi
-
+    while __is_spin
+    do
         for spin in $spinners
         do
             __is_spin || break

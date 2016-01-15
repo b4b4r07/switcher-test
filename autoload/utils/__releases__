@@ -105,7 +105,7 @@ done
             if [[ $tag_at == "latest" ]]; then
                 if grep -q "$index" <<<"$one_uri"; then
                     # up-to-date
-                    return 128
+                    return 4
                 else
                     :
                 fi
@@ -114,17 +114,6 @@ done
                 return 1
             fi
         fi
-
-        # if grep -q "$index" <<<"$one_uri"; then
-        #     # up-to-date
-        #     return 128
-        # else
-        #     if [[ $tag_at == "latest" ]]; then
-        #         :
-        #     else
-        #         return 1
-        #     fi
-        # fi
     else
         # Not update
         mkdir -p "$repo"

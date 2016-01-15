@@ -4,7 +4,8 @@ __ink() {
     local color tty=1 is_bold=false
     local -a text
 
-    while (( $# > 0 )); do
+    while (( $# > 0 ))
+    do
         case "$1" in
             --color)
                 if [[ ! $2 =~ ^(black|blue|cyan|default|green|grey|magenta|red|white|yellow)$ ]]; then

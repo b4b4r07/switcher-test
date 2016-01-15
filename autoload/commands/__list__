@@ -62,6 +62,7 @@ if (( $#out == 0 )); then
     __die "$arg: not found in \$zplugs\n"
     return 1
 fi
+
 __put '%s  =>  %s\n' "${(@kv)out:gs:@::}" \
     | sed -e 's/-EMP-/""/g' \
     | perl -pe 's/^(.*)( *=>.*)$/\033[32m$1\033[m$2/g' \

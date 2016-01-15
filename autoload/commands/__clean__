@@ -28,29 +28,18 @@ do
     shift
 done
 
-clean_deadlinks() {
-    local link
-    for link in $ZPLUG_HOME/bin/*(@N)
-    do
-        if [[ -L $link ]] && [[ ! -e $link ]]; then
-            rm -f "$link"
-        fi
-    done
-}
-
 filter="$(__get_filter "$ZPLUG_FILTER")"
 if $is_select; then
     args=(${(@f)"$(echo "${(Fk)zplugs}" | eval "$filter")"})
-    (( $#args == 0 )) && return 0
-# else
-#     args=("$@")
+    if (( $#args == 0 )); then
+        return 0
+    fi
 fi
 
 if (( $#args > 0 )); then
     for arg in "${args[@]}"
     do
         zspec=( ${(@f)"$(__parser__ "$arg")"} )
-
         if [[ -d $zspec[dir] ]]; then
             __put "- $fg[red]%s$reset_color\n" "$arg"
             if [[ $zspec[from] == "oh-my-zsh" ]]; then
@@ -64,7 +53,7 @@ if (( $#args > 0 )); then
         fi
     done
 
-    if (( fail > 0 )); then
+    if (( $fail > 0 )); then
         return 1
     fi
 
@@ -72,8 +61,7 @@ if (( $#args > 0 )); then
     if $is_force || read -q; then
         rm -rf "${(u)remove_args[@]}"
         rmdir "${(u)remove_args[@]:h}" 2>/dev/null
-        unfunction clean_deadlinks
-        clean_deadlinks
+        __remove_deadlinks $ZPLUG_HOME/bin/*(@N)
         __put "\nRemoved\n"
     else
         __put "\nCanceled\n"
@@ -94,7 +82,9 @@ else
         fi
     done
 
-    [[ -z ${repos[1]} ]] && return
+    if [[ -z $repos[1] ]]; then
+        return 0
+    fi
 
     __put "These repositories are no longer managed by zplug.\n"
     __put "- $fg[red]%s$reset_color\n" "${repos[@]}"
@@ -102,8 +92,7 @@ else
     if $is_force || read -q; then
         rm -rf "${repos[@]}"
         rmdir "${repos[@]:h}" 2>/dev/null
-        clean_deadlinks
-        unfunction clean_deadlinks
+        __remove_deadlinks $ZPLUG_HOME/bin/*(@N)
         __put "\nRemoved\n"
     else
         __put "\nCanceled\n"

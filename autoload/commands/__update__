@@ -37,7 +37,8 @@ esac
     else
         args=(${(u)${@:gs:@::}})
     fi
-    for line in "${args[@]}"; do
+    for line in "${args[@]}"
+    do
         (( $#line > max )) && max=$#line
     done
 }
@@ -92,10 +93,14 @@ do
             $line
 
         function () {
+            if (( $zspec[frozen] == 1 )); then
+                return 3
+            fi
+
             # Change directory to fullpath of zspec dir
             # or parent directory of zspec dir
             # If it fails, return this unnamed function with error code 2
-            builtin cd -q $zspec[dir] || builtin cd ${zspec[dir]%/*} || return 2
+            builtin cd -q $zspec[dir] || builtin cd -q ${zspec[dir]:h} || return 1
 
             # If zspec from is gh-r (GitHub Releases),
             # send a http request to git.io/releases with os argument
@@ -121,7 +126,7 @@ do
 
                 if [[ $rev_local == $rev_remote ]]; then
                     # up-to-date
-                    return 128
+                    return 4
                 elif [[ $rev_local = $rev_base ]]; then
                     # need to pull
                     git merge --ff-only origin/$zspec[at] && git submodule update --init --recursive
@@ -134,46 +139,45 @@ do
                     return 1
                 fi
             fi
-        } >/dev/null 2>&1
+        } &>/dev/null
         # Return code of above unnamed function
         # Incidentally,
         # nothing is output even if it success or fails
         ret=$status
 
-        if [[ -n $zspec[do] ]]; then
-            if [[ $ret -eq 0 ]]; then
-                eval "$zspec[do]"
-            fi
-        fi
-
-        case $ret in
+        case "$ret" in
             0)
                 __spinner_echo "$fg[green]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
                     "Updated!" \
                     "$line" \
                     $SECONDS
+
+                # Update hook
+                if [[ -n $zspec[do] ]]; then
+                    eval "$zspec[do]"
+                fi
                 ;;
             1)
                 __spinner_echo "$fg[red]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
-                    "Not Updated" \
+                    "Failed to update" \
                     "$line" \
                     $SECONDS
                 ;;
             2)
                 sleep 1
                 __spinner_echo "$fg[magenta]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
-                    "Not found" \
+                    "Not found repo" \
                     "$line" \
                     $(( SECONDS - 1 ))
                 ;;
-            110)
+            3)
                 sleep 1
                 __spinner_echo "$fg[blue]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
                     "Frozen repo" \
                     "$line" \
                     $(( SECONDS - 1 ))
                 ;;
-            128)
+            4)
                 __spinner_echo "$fg[white]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
                     "Up-to-date" \
                     "$line" \

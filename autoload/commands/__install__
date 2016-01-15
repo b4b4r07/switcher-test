@@ -110,17 +110,20 @@ do
             "$line"
         ret=$status
 
-        if [[ $ret -eq 0 ]]; then
-            __spinner_echo "$fg[green]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
-                "Installed" \
-                "${oh_my_line:-$line}" \
-                $SECONDS
-        else
-            __spinner_echo "$fg[red]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
-                "Not Installed" \
-                "${oh_my_line:-$line}" \
-                $SECONDS
-        fi
+        case "$ret" in
+            0)
+                __spinner_echo "$fg[green]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                    "Installed!" \
+                    "${oh_my_line:-$line}" \
+                    $SECONDS
+                ;;
+            1)
+                __spinner_echo "$fg[red]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                    "Failed to install" \
+                    "${oh_my_line:-$line}" \
+                    $SECONDS
+                ;;
+        esac
     } &
     queue+=($!)
     if (( $#queue % queue_max == 0 )); then
@@ -134,8 +137,9 @@ fi
 queue=()
 
 __spin_unlock
-for line in "${check[@]}"; do
-    [[ -e $line ]] || let fail++
+for line in "${check[@]}"
+do
+    [[ -d $line ]] || let fail++
 done
 
 # Skip footer prints

@@ -10,7 +10,8 @@ local -i ret
 [[ -d $ZPLUG_HOME/repos ]] || mkdir -p "$ZPLUG_HOME/repos"
 builtin cd -q "$ZPLUG_HOME/repos"
 
-while (( $# > 0 )); do
+while (( $# > 0 ))
+do
     case "$1" in
         --of)
             tag_of="$2"; shift
