@@ -64,13 +64,18 @@ do
     [[ $zspec[from] == "local" ]] && continue
     if [[ -e $ZPLUG_HOME/repos/$line ]] || [[ $zspec[from] == "oh-my-zsh" && -d $ZPLUG_HOME/repos/$_zplug_omz_repo/$line ]]; then
         if $is_verbose; then
-            __put "\033[31m-\033[m \033[32m${line}\033[m: already installed\n"
+            # __put "\033[31m-\033[m \033[32m${line}\033[m: already installed\n"
+            __put "$bg[red]-$reset_color $bg[green]$line$reset_color: already installed\n"
         fi
         continue
     fi
 
     # For checking
-    check+=($zspec[dir])
+    if [[ -n $zspec[dir] ]]; then
+        check+=($zspec[dir])
+    else
+        check+=($ZPLUG_HOME/repos/$line)
+    fi
 
     # Case of oh-my-zsh
     oh_my_line=""
@@ -120,14 +125,16 @@ if (( $#queue > 0 )); then
 fi
 queue=()
 
-# Skip footer prints
-if (( $#check == 0 )); then
-    return 0
-fi
-
+__spin_unlock
 for line in "${check[@]}"; do
     [[ -e $line ]] || let fail++
 done
+
+# Skip footer prints
+if (( $#check == 0 )); then
+    return $fail
+fi
+
 if [[ $fail -eq 0 ]]; then
     __put "\033[;1m ==> Installed all plugins to $ZPLUG_HOME/repos, successfully!\033[m\n"
 else
@@ -136,7 +143,6 @@ fi
 
 end=$SECONDS
 
-__spin_unlock
 __put "$ZPLUG_NAME: total wall-time %f sec.\n" $(($end - $start))
 
 return $fail

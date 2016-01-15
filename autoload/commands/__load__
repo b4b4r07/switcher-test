@@ -247,7 +247,8 @@ done
             else
                 source "$f"
                 if [[ $status -eq 0 ]] && $is_verbose; then
-                    __put "\033[32m  Loaded\033[m ${f/$ZPLUG_HOME\/repos\//}\n"
+                    # __put "\033[32m  Loaded\033[m ${f/$ZPLUG_HOME\/repos\//}\n"
+                    __put "$bg[green]  Loaded$reset_color ${f/$ZPLUG_HOME\/repos\//}\n"
                 fi
             fi
         fi
@@ -269,7 +270,8 @@ done
             else
                 source "$f"
                 if [[ $status -eq 0 ]] && $is_verbose; then
-                    __put "\033[32m  Loaded\033[m ${f/$ZPLUG_HOME\/repos\//} \033[33mafter running compinit\033[m\n"
+                    # __put "\033[32m  Loaded\033[m ${f/$ZPLUG_HOME\/repos\//} \033[33mafter running compinit\033[m\n"
+                    __put "$bg[green]  Loaded$reset_color ${f/$ZPLUG_HOME\/repos\//} $bg[yellow]after compinit$reset_color\n"
                 fi
             fi
         fi

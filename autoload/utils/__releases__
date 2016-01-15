@@ -100,16 +100,19 @@ done
     command_name="${repo:t}"
     if [[ -d $repo ]]; then
         # Update
-        index="$(<"$repo/INDEX")"
-        if [[ $tag_at == "latest" ]]; then
-            if grep -q "$index" <<<"$one_uri"; then
-                # up-to-date
-                return 128
+        if [[ -f $repo/INDEX ]]; then
+            index="$(<"$repo/INDEX")"
+            if [[ $tag_at == "latest" ]]; then
+                if grep -q "$index" <<<"$one_uri"; then
+                    # up-to-date
+                    return 128
+                else
+                    :
+                fi
             else
-                :
+                # up-to-date
+                return 1
             fi
-        else
-            return 1
         fi
 
         # if grep -q "$index" <<<"$one_uri"; then

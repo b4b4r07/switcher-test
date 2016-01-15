@@ -1,18 +1,20 @@
 #!/bin/zsh
 
 __import "core/core"
-__import "job/spinner"
 __import "print/print"
 __import "print/logger"
+__import "job/spinner"
 
 trap '__spin_unlock; trap - SIGINT' SIGINT
 
 local    line filter is_select=false
-local -i cnt=0 max=0 ret
+local -i cnt=0 max=0 ret=0
 local -a args
 local -a queue
 local -i queue_max=$ZPLUG_THREADS
 local -F SECONDS=0
+
+local -i frozen_lock=0
 
 case "$1" in
     --self)
@@ -49,6 +51,12 @@ __spin_lock
 __spinner &
 for line in "${args[@]}"
 do
+    if ! __zpluged "$line"; then
+        __die "$line: noooooo\n"
+        ret=1
+        continue
+    fi
+
     # Run installation in subprocess
     {
         # All variables are treated as local variable
@@ -64,23 +72,23 @@ do
         done
         [[ $zspec[from] == "local" ]] && continue
 
-        # Not update
-        if [[ $zspec[frozen] -eq 1 ]]; then
-            if [[ ${#@} -eq 1 && ${@[1]} == $zspec[name] ]]; then
-                __spinner_echo "\033[32m$zspec[name]\033[m: \033[34mfrozen repo\033[m. Update? [y/N]: "
-                if ! read -q; then
+        if [[ $# == 1 && $argv[1] == $zspec[name] ]]; then
+            if (( $zspec[frozen] == 1 )); then
+                __spin_unlock
+                # __put "\033[32m$zspec[name]\033[m: \033[34mfrozen repo\033[m. Update? [y/N]: "
+                __put "$bg[green]$zspec[name]$reset_color: $bg[blue]frozen repo$reset_color. Update? [y/N]: "
+                if read -q; then
+                    __put "\n"
+                    __spin_lock
+                    __spinner &
+                    SECONDS=0
+                else
                     continue
                 fi
-                echo
-            else
-                # Frozen!!
-                __spinner_echo " \033[34m* Frozen\033[m    $line\n"
-                continue
             fi
         fi
 
         __spinner_echo "Updating...  $line\n"
-
         function () {
             # Change directory to fullpath of zspec dir
             # or parent directory of zspec dir
@@ -99,7 +107,7 @@ do
             else
                 local fetch_opt
                 if [[ -e $zspec[dir]/.git/shallow ]]; then
-                    fetch_opt='--unshallow'
+                    fetch_opt="--unshallow"
                 fi
                 git fetch $fetch_opt
                 git checkout -q $zspec[at]
@@ -144,11 +152,12 @@ do
                 __spinner_echo "\033[31mNot Updated\033[m  %-${max}s\t(%.2fs)\n" "$line" $SECONDS
                 ;;
             2)
-                # Simple manual synchronous processing
                 sleep 1
-                # Output in magenta
-                # and SECONDS-1 (sleep 1)
                 __spinner_echo "\033[35mNot Found\033[m    %-${max}s\t(%.2fs)\n" "$line" $((SECONDS-1))
+                ;;
+            110)
+                sleep 1
+                __spinner_echo "\033[34mFrozen repo\033[m  %-${max}s\t(%.2fs)\n" "$line" $((SECONDS-1))
                 ;;
             128)
                 __spinner_echo "%s   %-${max}s\t(%.2fs)\n" $(__ink --color white "Up-to-date") "$line" $SECONDS
@@ -167,3 +176,4 @@ fi
 queue=()
 
 __spin_unlock
+return $ret

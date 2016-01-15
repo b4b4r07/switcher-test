@@ -8,10 +8,12 @@ __import "job/job"
 
 local    f
 local -a autoload_{dirs,files}
+
 __get_autoload_dirs;  autoload_dirs=(  "${reply[@]}" )
 __get_autoload_files; autoload_files=( "${reply[@]}" )
 
 # Add autoload directories to fpath
+# typeset -U fpath
 fpath=(
 "${autoload_dirs[@]}"
 $fpath
@@ -22,5 +24,8 @@ do
     autoload -Uz "$f"
 done
 
-# autoload -Uz add-zsh-hook
-# autoload -Uz compinit; compinit
+# autoload -Uz compinit
+# compinit
+
+autoload -Uz colors
+colors

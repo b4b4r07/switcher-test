@@ -1,10 +1,11 @@
 #!/bin/zsh
 
-local arg
-
 # Initialize
 source "$ZPLUG_ROOT/autoload/init.zsh"
+
 __import "print/print"
+
+local arg
 
 arg="$1"
 case "$arg" in

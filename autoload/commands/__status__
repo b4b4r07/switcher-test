@@ -1,6 +1,5 @@
 #!/bin/zsh
 
-__die "\n"
 return 1
 
 trap '__spin_unlock; trap - SIGINT' SIGINT
@@ -18,7 +17,8 @@ do
     {
         __spinner_echo "$i: Start"
         sleep $i
-        __spinner_echo "\033[32m$i: Finished\033[m"
+        # __spinner_echo "\033[32m$i: Finished\033[m"
+        __spinner_echo "$bg[green]$i: Finished\n$reset_color"
     } &
     queue+=($!)
 

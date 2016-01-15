@@ -9,6 +9,7 @@ local -a args
 local    stdin on_name
 local -a task on_args specs
 local    fd
+local    same
 
 case "$1" in
     --debug)
@@ -81,9 +82,9 @@ do
     tag="${tag%, }"
     # Add to $zplugs(AA; key:"user/repo" => value:"tag:value")
     if [[ -n ${zplugs[(I)${arg}]} ]]; then
-        for local same in ${(k)zplugs}
+        for same in ${(k)zplugs}
         do
-            if [[ $same =~ ^$arg ]] && (( max < $#same )); then
+            if [[ $same =~ ^$arg@*$ ]] && (( max < $#same )); then
                 max=$#same
                 arg="${same}@"
             fi

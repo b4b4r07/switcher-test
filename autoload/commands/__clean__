@@ -1,7 +1,7 @@
 #!/bin/zsh
 
-__import "print/print"
 __import "core/core"
+__import "print/print"
 
 local    k v arg filter repo
 local -i fail=0 num
@@ -30,18 +30,14 @@ done
 
 clean_deadlinks() {
     local link
-    for link in $ZPLUG_HOME/bin/*(N@)
+    for link in $ZPLUG_HOME/bin/*(@N)
     do
         if [[ -L $link ]] && [[ ! -e $link ]]; then
-            command rm -f "$link"
+            rm -f "$link"
         fi
     done
 }
 
-# Note:
-# How to remove elements from ordinary array or associative array
-# ordinary array   : array[num]=() or shift 1 array <= overwrite empty element or shift command
-# associative array: unset "array[key]"             <= unset array with double quotes
 filter="$(__get_filter "$ZPLUG_FILTER")"
 if $is_select; then
     args=(${(@f)"$(echo "${(Fk)zplugs}" | eval "$filter")"})
@@ -56,7 +52,8 @@ if (( $#args > 0 )); then
         zspec=( ${(@f)"$(__parser__ "$arg")"} )
 
         if [[ -e $zspec[dir] ]]; then
-            __put "- \033[31m%s\033[m\n" "$arg"
+            # __put "- \033[31m%s\033[m\n" "$arg"
+            __put "- $bg[red]%s$reset_color\n" "$arg"
             if [[ $zspec[from] == "oh-my-zsh" ]]; then
                 remove_args+=("$ZPLUG_HOME/repos/$_zplug_omz_repo")
             else
@@ -76,12 +73,12 @@ if (( $#args > 0 )); then
     if $is_force || read -q; then
         rm -rf "${(u)remove_args[@]}"
         rmdir "${(u)remove_args[@]:h}" 2>/dev/null
+        unfunction clean_deadlinks
         clean_deadlinks
         __put "\nRemoved\n"
     else
         __put "\nCanceled\n"
     fi
-
 else
     repos=("${(@f)$(find "$ZPLUG_HOME/repos" -maxdepth 2 -mindepth 2)}")
 
@@ -100,13 +97,15 @@ else
 
     [[ -z ${repos[1]} ]] && return
 
-    __put "\033[;1mThese repositories are no longer managed by zplug.\033[m\n"
-    __put "- \033[31m%s\033[m\n" "${repos[@]}"
+    # __put "\033[;1mThese repositories are no longer managed by zplug.\033[m\n"
+    __put "These repositories are no longer managed by zplug.\n"
+    __put "- $bg[red]%s$reset_color\n" "${repos[@]}"
     __put "Remove? [y/N]: "
     if $is_force || read -q; then
         rm -rf "${repos[@]}"
         rmdir "${repos[@]:h}" 2>/dev/null
         clean_deadlinks
+        unfunction clean_deadlinks
         __put "\nRemoved\n"
     else
         __put "\nCanceled\n"
