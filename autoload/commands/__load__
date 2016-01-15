@@ -269,7 +269,8 @@ done
             else
                 source "$f"
                 if [[ $status -eq 0 ]] && $is_verbose; then
-                    __put "$fg[green]  Loaded$reset_color ${f/$ZPLUG_HOME\/repos\//} $fg[yellow]after compinit$reset_color\n"
+                    __put "$fg[green]  Loaded$reset_color ${f/$ZPLUG_HOME\/repos\//}"
+                    __put "$fg[yellow] after compinit$reset_color\n"
                 fi
             fi
         fi

@@ -2,30 +2,39 @@
 
 source "$ZPLUG_ROOT/lib/init.zsh"
 
+__import "cli/variable" # require
 __import "core/core"
-__import "cli/variable"
 __import "job/job"
+__import "print/print"
 
-local    f
-local -a autoload_{dirs,files}
+if ! __zsh_version 4.3.9; then
+    __die "zplug does not work this version of zsh $ZSH_VERSION.\n"
+    __die "You must use zsh 4.3.9 or later.\n"
+    return 1
+fi
+
+if (( ! $+commands[git] )); then
+    __die "git: not found in \$PATH\n"
+    __die "zplug depends on git 1.7 or later.\n"
+    return 1
+fi
+
+local    cmd
+local -a autoload_dirs autoload_files
 
 __get_autoload_dirs;  autoload_dirs=(  "${reply[@]}" )
 __get_autoload_files; autoload_files=( "${reply[@]}" )
 
-# Add autoload directories to fpath
-# typeset -U fpath
 fpath=(
 "${autoload_dirs[@]}"
 $fpath
 )
 
-for f in "${autoload_files[@]}"
+for cmd in "${autoload_files[@]}"
 do
-    autoload -Uz "$f"
+    autoload -Uz "$cmd"
 done
 
-# autoload -Uz compinit
-# compinit
-
-autoload -Uz colors
-colors
+if [[ -f $ZPLUG_EXTERNAL ]]; then
+    source "$ZPLUG_EXTERNAL"
+fi

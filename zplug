@@ -25,6 +25,7 @@ if [[ $- =~ i ]]; then
         source "$zplug_main"
     else
         logo >&2
+        return 1
     fi
 else
     logo >&2

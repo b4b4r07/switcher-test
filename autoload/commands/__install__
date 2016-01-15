@@ -19,9 +19,9 @@ case "$1" in
     --verbose)
         is_verbose=true; shift
         ;;
-    --select)
-        is_select=true; shift
-        ;;
+    # --select)
+    #     is_select=true; shift
+    #     ;;
     -*|--*)
         __die "$1: Unknown option\n"
         return 1
@@ -61,15 +61,27 @@ do
     done
 
     # Skip installed items
-    if [[ $zspec[from] == "local" ]]; then
-        continue
-    fi
-    if [[ -e $ZPLUG_HOME/repos/$line ]] || [[ $zspec[from] == "oh-my-zsh" && -d $ZPLUG_HOME/repos/$_zplug_omz_repo/$line ]]; then
-        if $is_verbose; then
-            __put "$fg[red]-$reset_color $fg[green]$line$reset_color: already installed\n"
-        fi
-        continue
-    fi
+    case "$zspec[from]" in
+        "local")
+            continue
+            ;;
+        "oh-my-zsh")
+            if [[ -d $ZPLUG_HOME/repos/$_zplug_omz_repo/$line ]]; then
+                if $is_verbose; then
+                    __put "$fg[red]-$reset_color $fg[green]$line$reset_color: already installed\n"
+                fi
+                continue
+            fi
+            ;;
+        *)
+            if [[ -d $ZPLUG_HOME/repos/$line ]]; then
+                if $is_verbose; then
+                    __put "$fg[red]-$reset_color $fg[green]$line$reset_color: already installed\n"
+                fi
+                continue
+            fi
+            ;;
+    esac
 
     # For checking
     if [[ -n $zspec[dir] ]]; then
@@ -81,8 +93,12 @@ do
     # Case of oh-my-zsh
     oh_my_line=""
     if [[ $zspec[from] == "oh-my-zsh" ]]; then
-        (( oh_my_count++ > 0 )) && continue
-        [[ -d $ZPLUG_HOME/repos/$_zplug_omz_repo ]] && continue
+        if (( oh_my_count++ > 0 )); then
+            continue
+        fi
+        if [[ -d $ZPLUG_HOME/repos/$_zplug_omz_repo ]]; then
+            continue
+        fi
         oh_my_line="$_zplug_omz_repo"
     fi
 
@@ -147,7 +163,7 @@ if (( $#check == 0 )); then
     __die "No package to install\n"
     return $fail
 else
-    if [[ $fail -eq 0 ]]; then
+    if (( $fail == 0 )); then
         __put "$fg_bold[default] ==> Installed all plugins to $ZPLUG_HOME/repos, successfully!$reset_color\n"
     else
         __die "$fg_bold[red] ==> Installed to $ZPLUG_HOME/repos but failed.$reset_color\n"
