@@ -46,3 +46,7 @@ __import() {
 
 autoload -Uz add-zsh-hook
 autoload -Uz colors; colors
+
+if [[ -f $ZPLUG_EXTERNAL ]]; then
+    source "$ZPLUG_EXTERNAL"
+fi

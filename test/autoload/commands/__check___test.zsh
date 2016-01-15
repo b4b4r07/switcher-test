@@ -2,8 +2,9 @@
 
 : before
 {
-    export ZPLUG_HOME=$ZPLUG_ROOT/test/_fixtures
     source $ZPLUG_ROOT/zplug.zsh
+    source $ZPLUG_ROOT/autoload/init.zsh
+    export ZPLUG_HOME=$ZPLUG_ROOT/test/_fixtures
     local -A zplugs
     local    expect actual
     local -i status_code
@@ -22,7 +23,7 @@ after_each() {
 describe "__check__"
     it "unknown option"
         expect="--unknown: Unknown option"
-        actual="$(zplug check --unknown 2>&1)"
+        actual="$(__check__ --unknown 2>&1)"
         status_code=$status
         assert.equals "$expect" "$actual"
         assert.false $status_code
@@ -30,8 +31,8 @@ describe "__check__"
 
     it "check returns true"
         before_each
-        zplugs=("foo/bar" "dir:$ZPLUG_HOME/repos/foo/bar")
-        zplug check "foo/bar"
+        __add__ "foo/bar"
+        __check__ "foo/bar"
         status_code=$status
         assert.true $status_code
         after_each
@@ -39,7 +40,7 @@ describe "__check__"
 
     it "check returns false"
         zplugs=()
-        zplug check "foo/bar" &>/dev/null
+        __check__ "foo/bar" &>/dev/null
         status_code=$status
         assert.false $status_code
     end
@@ -47,7 +48,7 @@ describe "__check__"
     it "check returns false with verbose message"
         zplugs=()
         expect="- foo/bar: not installed"
-        actual="$(zplug check --verbose "foo/bar" 2>&1)"
+        actual="$(__check__ --verbose "foo/bar" 2>&1)"
         status_code=$status
         assert.equals "$expect" "$(perl -pe 's/\x1b\[[0-9;]*m//g' <<<"$actual")"
         assert.false $status_code

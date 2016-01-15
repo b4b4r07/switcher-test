@@ -16,6 +16,7 @@ before_each() {
     create_mock_plugin "foo/bar"
     init_mock_repos "foo/bar"
 }
+
 after_each() {
     rm -rf $ZPLUG_HOME/repos/**/.git(N-/)
 }

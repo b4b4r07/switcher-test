@@ -34,12 +34,12 @@ do
             continue
             ;;
         "oh-my-zsh")
-            if [[ ! -d $zspec[dif] ]]; then
+            if [[ ! -d ${zspec[dir]:h} ]]; then
                 fail+=("$zspec[name]")
             fi
             ;;
         *)
-            if [[ ! -d ${zspec[dif]:h} ]]; then
+            if [[ ! -d $zspec[dir] ]]; then
                 fail+=("$zspec[name]")
             fi
             ;;

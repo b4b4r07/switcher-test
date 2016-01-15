@@ -34,7 +34,3 @@ for cmd in "${autoload_files[@]}"
 do
     autoload -Uz "$cmd"
 done
-
-if [[ -f $ZPLUG_EXTERNAL ]]; then
-    source "$ZPLUG_EXTERNAL"
-fi
