@@ -11,7 +11,7 @@
 describe "__list__"
     it "empty zplugs"
         zplugs=()
-        expect="there is"
+        expect="there are"
         actual="$(zplug list 2>&1)"
         status_code=$status
         assert.match "$expect" "$actual"
