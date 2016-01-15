@@ -13,7 +13,7 @@
 } &>/dev/null
 
 after_each() {
-    rm -f $ZPLUG_EXTERNAL
+    rm -f "$ZPLUG_EXTERNAL"
 }
 
 describe "__external__"
@@ -27,7 +27,7 @@ describe "__external__"
 
     it "__external__ 2"
         __external__ 'zplug "b4b4r07/enhancd", as:plugin, of:"*.sh"'
-        expect='b4b4r07/enhancd'
+        expect="b4b4r07/enhancd"
         actual="$(cat $ZPLUG_EXTERNAL)"
         assert.match "$expect" "$actual"
         after_each

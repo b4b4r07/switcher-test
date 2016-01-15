@@ -107,7 +107,7 @@ do
     fi
 
     if __is_cli; then
-        __external__ "zplug ${arg}${tag:+, ${(q)tag}}"
+        __external__ "zplug ${arg}${tag:+, ${(q)tag}}" &>/dev/null
     fi
 
     tag=""
