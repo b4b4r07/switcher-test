@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+source "$ZPLUG_ROOT/autoload/init.zsh"
+
 __import "core/core"
 
 local    cmd

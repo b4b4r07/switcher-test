@@ -1,6 +1,5 @@
 #!/bin/zsh
 
-source "$ZPLUG_ROOT/autoload/init.zsh"
 source "$ZPLUG_ROOT/autoload/autoload.zsh"
 
 __import "print/print"

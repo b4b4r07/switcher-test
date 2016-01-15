@@ -20,12 +20,12 @@ if [[ ! -f $ZPLUG_EXTERNAL ]]; then
 	#
 	#
 	# Example:
-	# zplug "b4b4r07/enhancd", as:plugin, of:"*.zsh"
+	# zplug "b4b4r07/enhancd", as:plugin, of:"*.sh"
 	# zplug "rupa/z",          as:plugin, of:"*.sh"
 	#
 TEMPLATE
 fi
 
 if [[ -n $1 ]]; then
-    __put "$1\n" >>|$ZPLUG_EXTERNAL
+    __put "$@\n" >>|$ZPLUG_EXTERNAL
 fi
