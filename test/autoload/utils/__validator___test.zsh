@@ -2,6 +2,7 @@
 
 : before
 {
+    source $ZPLUG_ROOT/autoload/autoload.zsh
     source $ZPLUG_ROOT/zplug.zsh
     export ZPLUG_HOME=$ZPLUG_ROOT/test/_fixtures
     local -A zplugs

@@ -2,6 +2,8 @@
 
 : before
 {
+    source $ZPLUG_ROOT/autoload/init.zsh
+    source $ZPLUG_ROOT/autoload/autoload.zsh
     source $ZPLUG_ROOT/zplug.zsh
     local -A zplugs
     local    expect actual
