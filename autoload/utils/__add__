@@ -30,7 +30,6 @@ args[1]=()
 task=("$arg")
 
 if __is_cli && __zpluged "$arg"; then
-# if __is_cli && (( $+zplugs[$arg] )); then
     __die "$arg: already managed\n"
     return 1
 fi
@@ -109,7 +108,6 @@ do
 
     if __is_cli; then
         __external__ "zplug ${arg}${tag:+, ${(q)tag}}"
-        # echo "zplug ${arg}${tag:+, ${(q)tag}}" >>|$ZPLUG_EXTERNAL
     fi
 
     tag=""

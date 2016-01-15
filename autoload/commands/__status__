@@ -17,8 +17,7 @@ do
     {
         __spinner_echo "$i: Start"
         sleep $i
-        # __spinner_echo "\033[32m$i: Finished\033[m"
-        __spinner_echo "$bg[green]$i: Finished\n$reset_color"
+        __spinner_echo "$fg[green]$i: Finished\n$reset_color"
     } &
     queue+=($!)
 
@@ -27,7 +26,9 @@ do
         queue=()
     fi
 done
-wait $queue
+if (( $#queue > 0 )); then
+    wait $queue
+fi
 queue=()
 
 __spin_unlock

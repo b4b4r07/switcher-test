@@ -3,8 +3,8 @@
 __import "core/core"
 __import "print/print"
 
-if (( $#zplugs < 1 )); then
-    __die "$ZPLUG_NAME: there is no available plugins\n"
+if (( $#zplugs == 0 )); then
+    __die "$ZPLUG_NAME: there are no available plugins\n"
     return 1
 fi
 
@@ -31,7 +31,9 @@ esac
 filter="$(__get_filter "$ZPLUG_FILTER")"
 if $is_select; then
     args=(${(@f)"$(echo "${(Fk)zplugs}" | eval "$filter")"})
-    (( $#args == 0 )) && return 0
+    if (( $#args == 0 )); then
+        return 0
+    fi
 else
     args=("$@")
 fi
@@ -56,7 +58,7 @@ if (( $#args > 0 )); then
     done
 fi
 
-if (( $#out < 1 )); then
+if (( $#out == 0 )); then
     __die "$arg: not found in \$zplugs\n"
     return 1
 fi
@@ -64,5 +66,3 @@ __put '%s  =>  %s\n' "${(@kv)out:gs:@::}" \
     | sed -e 's/-EMP-/""/g' \
     | perl -pe 's/^(.*)( *=>.*)$/\033[32m$1\033[m$2/g' \
     | perl -pe 's/'"$_zplug_tag_pattern"'(:)/\033[34m$1\033[m$2/g'
-
-    # | perl -pe 's/('"$_zplug_tag_pattern"')(:)/\033[34m$1\033[m$2/g'

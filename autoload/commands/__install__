@@ -11,7 +11,7 @@ local    oh_my_line oh_my_count=0
 local -A zspec
 local -i cnt=0 max=0 fail=0
 local -F SECONDS=0
-local -F start end
+local -F start finish
 local -a queue
 local -i queue_max=$ZPLUG_THREADS
 
@@ -30,7 +30,7 @@ esac
 
 # Initialize
 {
-    # [[ -d $ZPLUG_HOME/repos ]] || mkdir -p "$ZPLUG_HOME/repos"
+    [[ -d $ZPLUG_HOME/repos ]] || mkdir -p "$ZPLUG_HOME/repos"
     start=$SECONDS
     filter="$(__get_filter "$ZPLUG_FILTER")"
     if $is_select; then
@@ -39,19 +39,19 @@ esac
         args=(${(u)${@:gs:@::}})
     fi
 
-    for line in "${args[@]}"; do
+    if (( $#args == 0 )); then
+        __list__
+        return $status
+    fi
+
+    for line in "${args[@]}"
+    do
         (( $#line > $max )) && max=$#line
     done
 }
 
-if (( $#args == 0 )); then
-    __list__
-    return $status
-fi
-
 for line in "${args[@]}"
 do
-    # Parse line
     zspec=( ${(@f)"$(__parser__ "$line")"} )
     for key in ${(k)zspec}
     do
@@ -61,20 +61,21 @@ do
     done
 
     # Skip installed items
-    [[ $zspec[from] == "local" ]] && continue
+    if [[ $zspec[from] == "local" ]]; then
+        continue
+    fi
     if [[ -e $ZPLUG_HOME/repos/$line ]] || [[ $zspec[from] == "oh-my-zsh" && -d $ZPLUG_HOME/repos/$_zplug_omz_repo/$line ]]; then
         if $is_verbose; then
-            # __put "\033[31m-\033[m \033[32m${line}\033[m: already installed\n"
-            __put "$bg[red]-$reset_color $bg[green]$line$reset_color: already installed\n"
+            __put "$fg[red]-$reset_color $fg[green]$line$reset_color: already installed\n"
         fi
         continue
     fi
 
     # For checking
     if [[ -n $zspec[dir] ]]; then
-        check+=($zspec[dir])
+        check+=("$zspec[dir]")
     else
-        check+=($ZPLUG_HOME/repos/$line)
+        check+=("$ZPLUG_HOME/repos/$line")
     fi
 
     # Case of oh-my-zsh
@@ -96,9 +97,10 @@ do
         local -i ret
         local -F SECONDS=0
 
-        __spinner_echo "Installing...  ${oh_my_line:-$line}\n"
+        __spinner_echo "%-20s %s\n" \
+            "Installing..." \
+            "${oh_my_line:-$line}"
 
-        # builtin cd -q "$ZPLUG_HOME/repos" &>/dev/null
         __clone__ \
             --of     ${zspec[of]:-""} \
             --commit ${zspec[commit]:-""} \
@@ -109,9 +111,15 @@ do
         ret=$status
 
         if [[ $ret -eq 0 ]]; then
-            __spinner_echo "\033[32mInstalled!\033[m     %-${max}s\t(%.2fs)\n" "${oh_my_line:-$line}" $SECONDS
+            __spinner_echo "$fg[green]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                "Installed" \
+                "${oh_my_line:-$line}" \
+                $SECONDS
         else
-            __spinner_echo "\033[31mNot Installed\033[m  %-${max}s\t(%.2fs)\n" "${oh_my_line:-$line}" $SECONDS
+            __spinner_echo "$fg[red]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                "Not Installed" \
+                "${oh_my_line:-$line}" \
+                $SECONDS
         fi
     } &
     queue+=($!)
@@ -132,17 +140,17 @@ done
 
 # Skip footer prints
 if (( $#check == 0 )); then
+    __die "No package to install\n"
+    return $fail
+else
+    if [[ $fail -eq 0 ]]; then
+        __put "$fg_bold[default] ==> Installed all plugins to $ZPLUG_HOME/repos, successfully!$reset_color\n"
+    else
+        __die "$fg_bold[red] ==> Installed to $ZPLUG_HOME/repos but failed.$reset_color\n"
+    fi
+
+    finish=$SECONDS
+    __put "$ZPLUG_NAME: total wall-time %f sec.\n" $(($finish - $start))
+
     return $fail
 fi
-
-if [[ $fail -eq 0 ]]; then
-    __put "\033[;1m ==> Installed all plugins to $ZPLUG_HOME/repos, successfully!\033[m\n"
-else
-    __die "\033[31;1m ==> Installed to $ZPLUG_HOME/repos but failed.\033[m\n"
-fi
-
-end=$SECONDS
-
-__put "$ZPLUG_NAME: total wall-time %f sec.\n" $(($end - $start))
-
-return $fail

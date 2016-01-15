@@ -8,7 +8,7 @@ local -A zplugs_tags
 local    name as of from if dir file at do frozen on commit nice ignore
 
 if [[ -z $1 ]]; then
-    __die "$funcstack[1]: too few arguments"
+    __die "$funcstack[1]: too few arguments\n"
     return 1
 fi
 arg="$1"

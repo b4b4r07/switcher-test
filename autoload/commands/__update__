@@ -75,8 +75,7 @@ do
         if [[ $# == 1 && $argv[1] == $zspec[name] ]]; then
             if (( $zspec[frozen] == 1 )); then
                 __spin_unlock
-                # __put "\033[32m$zspec[name]\033[m: \033[34mfrozen repo\033[m. Update? [y/N]: "
-                __put "$bg[green]$zspec[name]$reset_color: $bg[blue]frozen repo$reset_color. Update? [y/N]: "
+                __put "$fg[green]$zspec[name]$reset_color: $fg[blue]frozen repo$reset_color. Update? [y/N]: "
                 if read -q; then
                     __put "\n"
                     __spin_lock
@@ -88,7 +87,10 @@ do
             fi
         fi
 
-        __spinner_echo "Updating...  $line\n"
+        __spinner_echo "%-20s %s\n" \
+            "Updating..." \
+            $line
+
         function () {
             # Change directory to fullpath of zspec dir
             # or parent directory of zspec dir
@@ -146,21 +148,36 @@ do
 
         case $ret in
             0)
-                __spinner_echo "\033[32mUpdated!\033[m     %-${max}s\t(%.2fs)\n" "$line" $SECONDS
+                __spinner_echo "$fg[green]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                    "Updated!" \
+                    "$line" \
+                    $SECONDS
                 ;;
             1)
-                __spinner_echo "\033[31mNot Updated\033[m  %-${max}s\t(%.2fs)\n" "$line" $SECONDS
+                __spinner_echo "$fg[red]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                    "Not Updated" \
+                    "$line" \
+                    $SECONDS
                 ;;
             2)
                 sleep 1
-                __spinner_echo "\033[35mNot Found\033[m    %-${max}s\t(%.2fs)\n" "$line" $((SECONDS-1))
+                __spinner_echo "$fg[magenta]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                    "Not found" \
+                    "$line" \
+                    $(( SECONDS - 1 ))
                 ;;
             110)
                 sleep 1
-                __spinner_echo "\033[34mFrozen repo\033[m  %-${max}s\t(%.2fs)\n" "$line" $((SECONDS-1))
+                __spinner_echo "$fg[blue]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                    "Frozen repo" \
+                    "$line" \
+                    $(( SECONDS - 1 ))
                 ;;
             128)
-                __spinner_echo "%s   %-${max}s\t(%.2fs)\n" $(__ink --color white "Up-to-date") "$line" $SECONDS
+                __spinner_echo "$fg[white]%-20s$reset_color %-${max}s\t(%.2fs)\n" \
+                    "Up-to-date" \
+                    "$line" \
+                    $SECONDS
                 ;;
         esac
     } &

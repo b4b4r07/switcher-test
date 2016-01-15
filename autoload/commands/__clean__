@@ -51,9 +51,8 @@ if (( $#args > 0 )); then
     do
         zspec=( ${(@f)"$(__parser__ "$arg")"} )
 
-        if [[ -e $zspec[dir] ]]; then
-            # __put "- \033[31m%s\033[m\n" "$arg"
-            __put "- $bg[red]%s$reset_color\n" "$arg"
+        if [[ -d $zspec[dir] ]]; then
+            __put "- $fg[red]%s$reset_color\n" "$arg"
             if [[ $zspec[from] == "oh-my-zsh" ]]; then
                 remove_args+=("$ZPLUG_HOME/repos/$_zplug_omz_repo")
             else
@@ -97,9 +96,8 @@ else
 
     [[ -z ${repos[1]} ]] && return
 
-    # __put "\033[;1mThese repositories are no longer managed by zplug.\033[m\n"
     __put "These repositories are no longer managed by zplug.\n"
-    __put "- $bg[red]%s$reset_color\n" "${repos[@]}"
+    __put "- $fg[red]%s$reset_color\n" "${repos[@]}"
     __put "Remove? [y/N]: "
     if $is_force || read -q; then
         rm -rf "${repos[@]}"
