@@ -32,7 +32,6 @@ do
     # as: must (default: plugin)
     if [[ ! $zspec[as] =~ ^(command|plugin|none)$ ]]; then
         __die "\033[31m[$ZPLUG_NAME] #syntax error# tag 'as:' takes ['command','plugin'] (zplug \"$zspec[name]\")\033[m\n"
-
         # Remove that key and value
         unset "zplugs[$zspec[name]]"
         # Increments if it fails

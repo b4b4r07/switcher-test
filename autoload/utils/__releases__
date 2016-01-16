@@ -150,9 +150,9 @@ done
     rm -rf *~"$command_name"(N)
 
     if [[ -x $command_name ]]; then
-        __put "Installed $command_name successfully\n"
+        __put "$command_name: Installed successfully\n"
     else
-        __die "Failed to install $command_name\n"
+        __die "$command_name: Failed to install\n"
         ret=1
     fi
     # builtin cd -q "$OLDPWD"

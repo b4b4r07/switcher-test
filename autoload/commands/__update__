@@ -30,6 +30,7 @@ case "$1" in
         ;;
 esac
 
+# Initialize
 {
     filter="$(__get_filter "$ZPLUG_FILTER")"
     if $is_select; then
@@ -37,23 +38,24 @@ esac
     else
         args=(${(u)${@:gs:@::}})
     fi
+
+    if (( $#args == 0 )); then
+        __list__
+        return $status
+    fi
+
     for line in "${args[@]}"
     do
-        (( $#line > max )) && max=$#line
+        (( $#line > $max )) && max=$#line
     done
 }
-
-if (( $#args == 0 )); then
-    __list__
-    return $status
-fi
 
 __spin_lock
 __spinner &
 for line in "${args[@]}"
 do
     if ! __zpluged "$line"; then
-        __die "$line: noooooo\n"
+        __die "$line: no such package\n"
         ret=1
         continue
     fi
@@ -71,7 +73,9 @@ do
                 zspec[$k]=""
             fi
         done
-        [[ $zspec[from] == "local" ]] && continue
+        if [[ $zspec[from] == "local" ]]; then
+            continue
+        fi
 
         if [[ $# == 1 && $argv[1] == $zspec[name] ]]; then
             if (( $zspec[frozen] == 1 )); then

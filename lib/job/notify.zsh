@@ -5,8 +5,7 @@ __osx_version() {
 }
 
 __notify_with_system() {
-    if (( $+commands[osascript] )) && __osx_version 10.9; then
-    fi
+    (( $+commands[osascript] )) && __osx_version 10.9
 }
 
 __notify_with_tools() {
@@ -15,6 +14,7 @@ __notify_with_tools() {
 
 __notifier() {
     local title text sound
+
     title="$1"
     text="$2"
     sound="${3:-default}"

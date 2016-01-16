@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 __import "core/core"
-__import "job/job"
+__import "job/polling"
 
 local    cmd
 local -a autoload_dirs autoload_files
@@ -20,6 +20,5 @@ $fpath
 
 for cmd in "${autoload_files[@]}"
 do
-    echo $cmd
     autoload -Uz "$cmd"
 done
