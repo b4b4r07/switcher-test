@@ -43,7 +43,7 @@ if (( $#args > 0 )); then
         if [[ -d $zspec[dir] ]]; then
             __put "- $fg[red]%s$reset_color\n" "$arg"
             if [[ $zspec[from] == "oh-my-zsh" ]]; then
-                remove_args+=("$ZPLUG_HOME/repos/$_zplug_omz_repo")
+                remove_args+=("$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH")
             else
                 remove_args+=("$ZPLUG_HOME/repos/$arg")
             fi
@@ -73,8 +73,8 @@ else
     for v in "${(@v)zplugs}"
     do
         k="${${v##*dir:}%%, *}"
-        if [[ $k =~ $_zplug_omz_repo ]]; then
-            k=$ZPLUG_HOME/repos/$_zplug_omz_repo
+        if [[ $k =~ $_ZPLUG_OHMYZSH ]]; then
+            k=$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH
         fi
         num="${repos[(i)$k]}"
         if [[ -n "$num" ]]; then

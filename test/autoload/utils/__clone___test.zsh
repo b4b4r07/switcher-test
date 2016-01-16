@@ -54,7 +54,7 @@ describe "__clone__"
         status_code=$status
         assert.equals "$expect" "$actual"
         assert.true $status_code
-        builtin cd -q "$ZPLUG_HOME/repos/$_zplug_omz_repo"
+        builtin cd -q "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH"
         expect="https://git::@github.com/robbyrussell/oh-my-zsh.git"
         actual="$(git remote -v)"
         assert.match "$expect" "$actual"

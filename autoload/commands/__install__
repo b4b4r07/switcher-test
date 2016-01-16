@@ -66,7 +66,7 @@ do
             continue
             ;;
         "oh-my-zsh")
-            if [[ -d $ZPLUG_HOME/repos/$_zplug_omz_repo/$line ]]; then
+            if [[ -d $ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/$line ]]; then
                 if $is_verbose; then
                     __put "$fg[red]-$reset_color $fg[green]$line$reset_color: already installed\n"
                 fi
@@ -96,10 +96,10 @@ do
         if (( oh_my_count++ > 0 )); then
             continue
         fi
-        if [[ -d $ZPLUG_HOME/repos/$_zplug_omz_repo ]]; then
+        if [[ -d $ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH ]]; then
             continue
         fi
-        oh_my_line="$_zplug_omz_repo"
+        oh_my_line="$_ZPLUG_OHMYZSH"
     fi
 
     __spin_lock

@@ -61,7 +61,7 @@ create_mock_command() {
 create_mock_omz() {
     git clone \
         --depth 1 \
-        "https://github.com/$_zplug_omz_repo" \
-        "$ZPLUG_HOME/repos/$_zplug_omz_repo" \
+        "https://github.com/$_ZPLUG_OHMYZSH" \
+        "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH" \
         &>/dev/null
 }

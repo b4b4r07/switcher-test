@@ -65,7 +65,7 @@ describe "__parser__"
     end
 
     it "Oh My Zsh"
-        zplugs=("$_zplug_omz_repo" "")
+        zplugs=("$_ZPLUG_OHMYZSH" "")
         expects=(
         as        plugin
         at        master
@@ -76,18 +76,18 @@ describe "__parser__"
         from      github
         do        -EMP-
         file      -EMP-
-        name      "$_zplug_omz_repo"
+        name      "$_ZPLUG_OHMYZSH"
         nice      -10
         if        -EMP-
         frozen    0
         on        -EMP-
         )
-        actuals=( ${(@f)"$(__parser__ "$_zplug_omz_repo")"} )
+        actuals=( ${(@f)"$(__parser__ "$_ZPLUG_OHMYZSH")"} )
         assert.array_equals expects actuals
     end
 
     it "Oh My Zsh with nice:1"
-        zplugs=("$_zplug_omz_repo" "nice:1")
+        zplugs=("$_ZPLUG_OHMYZSH" "nice:1")
         expects=(
         as        plugin
         at        master
@@ -98,18 +98,18 @@ describe "__parser__"
         from      github
         do        -EMP-
         file      -EMP-
-        name      "$_zplug_omz_repo"
+        name      "$_ZPLUG_OHMYZSH"
         nice      1
         if        -EMP-
         frozen    0
         on        -EMP-
         )
-        actuals=( ${(@f)"$(__parser__ "$_zplug_omz_repo")"} )
+        actuals=( ${(@f)"$(__parser__ "$_ZPLUG_OHMYZSH")"} )
         assert.array_equals expects actuals
     end
 
     it "Oh My Zsh with nice:-20"
-        zplugs=("$_zplug_omz_repo" "nice:-20")
+        zplugs=("$_ZPLUG_OHMYZSH" "nice:-20")
         expects=(
         as        plugin
         at        master
@@ -120,13 +120,13 @@ describe "__parser__"
         from      github
         do        -EMP-
         file      -EMP-
-        name      "$_zplug_omz_repo"
+        name      "$_ZPLUG_OHMYZSH"
         nice      -20
         if        -EMP-
         frozen    0
         on        -EMP-
         )
-        actuals=( ${(@f)"$(__parser__ "$_zplug_omz_repo")"} )
+        actuals=( ${(@f)"$(__parser__ "$_ZPLUG_OHMYZSH")"} )
         assert.array_equals expects actuals
     end
 end

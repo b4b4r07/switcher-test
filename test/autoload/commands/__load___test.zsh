@@ -6,7 +6,7 @@
     source $ZPLUG_ROOT/autoload/autoload.zsh
     source $ZPLUG_ROOT/zplug.zsh
     export ZPLUG_HOME=$ZPLUG_ROOT/test/_fixtures
-    export ZPLUG_CACHE_FILE=$ZPLUG_HOME/.cache
+    export _ZPLUG_CACHE_FILE=$ZPLUG_HOME/.cache
     local -A zplugs
     local    expect actual
     local -i status_code
@@ -14,7 +14,7 @@
 } &>/dev/null
 
 before_each() {
-    rm -f "$ZPLUG_CACHE_FILE"
+    rm -f "$_ZPLUG_CACHE_FILE"
 }
 
 after_each() {
@@ -32,8 +32,8 @@ describe "__load__"
     end
 
     it "cache"
-        touch "$ZPLUG_CACHE_FILE"
-        expect="$ZPLUG_CACHE_FILE"
+        touch "$_ZPLUG_CACHE_FILE"
+        expect="$_ZPLUG_CACHE_FILE"
         actual="$(ZPLUG_USE_CACHE=true __load__ --debug 2>&1)"
         status_code=$status
         assert.equals "$expect" "$actual"
@@ -101,12 +101,12 @@ describe "__load__"
                 before_each
                 __add__ "plugins/git, from:oh-my-zsh"
                 repos=(
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/oh-my-zsh.sh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/oh-my-zsh.sh"
                 "$ZPLUG_HOME/repos/foo4/bar/foo4bar.zsh"
                 "$ZPLUG_HOME/repos/foo1/bar/foo1bar.zsh"
                 "$ZPLUG_HOME/repos/foo2/bar/foo2bar.zsh"
                 "$ZPLUG_HOME/repos/foo3/bar/foo3bar.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/git/git.plugin.zsh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/git/git.plugin.zsh"
                 )
                 expect="$(print -l $repos)"
                 actual="$(__load__ --debug 2>/dev/null)"
@@ -119,13 +119,13 @@ describe "__load__"
                 before_each
                 __add__ "plugins/mix, from:oh-my-zsh"
                 repos=(
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/oh-my-zsh.sh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/oh-my-zsh.sh"
                 "$ZPLUG_HOME/repos/foo4/bar/foo4bar.zsh"
                 "$ZPLUG_HOME/repos/foo1/bar/foo1bar.zsh"
                 "$ZPLUG_HOME/repos/foo2/bar/foo2bar.zsh"
                 "$ZPLUG_HOME/repos/foo3/bar/foo3bar.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/git/git.plugin.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/mix"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/git/git.plugin.zsh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/mix"
                 )
                 expect="$(print -l $repos)"
                 actual="$(__load__ --debug 2>/dev/null)"
@@ -138,15 +138,15 @@ describe "__load__"
                 before_each
                 __add__ "plugins/brew, from:oh-my-zsh"
                 repos=(
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/oh-my-zsh.sh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/oh-my-zsh.sh"
                 "$ZPLUG_HOME/repos/foo4/bar/foo4bar.zsh"
                 "$ZPLUG_HOME/repos/foo1/bar/foo1bar.zsh"
                 "$ZPLUG_HOME/repos/foo2/bar/foo2bar.zsh"
                 "$ZPLUG_HOME/repos/foo3/bar/foo3bar.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/brew/brew.plugin.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/git/git.plugin.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/brew"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/mix"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/brew/brew.plugin.zsh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/git/git.plugin.zsh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/brew"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/mix"
                 )
                 expect="$(print -l $repos)"
                 actual="$(__load__ --debug 2>/dev/null)"
@@ -159,16 +159,16 @@ describe "__load__"
                 before_each
                 __add__ "themes/3den, from:oh-my-zsh"
                 repos=(
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/oh-my-zsh.sh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/oh-my-zsh.sh"
                 "$ZPLUG_HOME/repos/foo4/bar/foo4bar.zsh"
                 "$ZPLUG_HOME/repos/foo1/bar/foo1bar.zsh"
                 "$ZPLUG_HOME/repos/foo2/bar/foo2bar.zsh"
                 "$ZPLUG_HOME/repos/foo3/bar/foo3bar.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/brew/brew.plugin.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/git/git.plugin.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/themes/3den.zsh-theme"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/brew"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/mix"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/brew/brew.plugin.zsh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/git/git.plugin.zsh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/themes/3den.zsh-theme"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/brew"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/mix"
                 )
                 expect="$(print -l $repos)"
                 actual="$(__load__ --debug 2>/dev/null)"
@@ -181,17 +181,17 @@ describe "__load__"
                 before_each
                 __add__ "themes/zhann, from:oh-my-zsh"
                 repos=(
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/oh-my-zsh.sh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/oh-my-zsh.sh"
                 "$ZPLUG_HOME/repos/foo4/bar/foo4bar.zsh"
                 "$ZPLUG_HOME/repos/foo1/bar/foo1bar.zsh"
                 "$ZPLUG_HOME/repos/foo2/bar/foo2bar.zsh"
                 "$ZPLUG_HOME/repos/foo3/bar/foo3bar.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/brew/brew.plugin.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/git/git.plugin.zsh"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/themes/3den.zsh-theme"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/themes/zhann.zsh-theme"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/brew"
-                "$ZPLUG_HOME/repos/$_zplug_omz_repo/plugins/mix"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/brew/brew.plugin.zsh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/git/git.plugin.zsh"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/themes/3den.zsh-theme"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/themes/zhann.zsh-theme"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/brew"
+                "$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/plugins/mix"
                 )
                 expect="$(print -l $repos)"
                 actual="$(__load__ --debug 2>/dev/null)"

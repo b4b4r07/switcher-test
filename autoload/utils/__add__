@@ -65,7 +65,7 @@ do
 
     for i in ${==specs[@]}
     do
-        if [[ ${i%%:*} =~ ^$_zplug_tag_pattern$ ]]; then
+        if [[ ${i%%:*} =~ ^$_ZPLUG_TAG_PATTERN$ ]]; then
             tag="${tag}${i%,}, "
             if [[ $i == "from:oh-my-zsh" ]]; then
                 is_oh_my_zsh=true
@@ -92,7 +92,7 @@ do
     zplugs+=("$arg" "${tag:-}")
     # Add dir tag to $zplugs
     if $is_oh_my_zsh; then
-        zplugs[$arg]+="${zplugs[$arg]:+, }dir:$ZPLUG_HOME/repos/$_zplug_omz_repo/${arg:gs:@::}"
+        zplugs[$arg]+="${zplugs[$arg]:+, }dir:$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH/${arg:gs:@::}"
     elif $is_local; then
         if [[ $arg[1] =~ [~$/] ]]; then
             zplugs[$arg]+="${zplugs[$arg]:+, }dir:"${~arg:gs:@::}""

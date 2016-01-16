@@ -30,7 +30,7 @@ commit=${${${(M)parsed_zplugs:#commit:*}#*:}:--EMP-}
 nice=${${${(M)parsed_zplugs:#nice:*}#*:}:-0}
 ignore=${${${(M)parsed_zplugs:#ignore:*}#*:}:--EMP-}
 
-if [[ $name == $_zplug_omz_repo ]] && [[ $nice -eq 0 ]]; then
+if [[ $name == $_ZPLUG_OHMYZSH ]] && [[ $nice -eq 0 ]]; then
     nice=-10
 fi
 

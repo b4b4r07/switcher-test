@@ -44,7 +44,7 @@ done
 {
     case "$tag_from" in
         oh-my-zsh)
-            repository="$_zplug_omz_repo"
+            repository="$_ZPLUG_OHMYZSH"
             ;&
 
         github)

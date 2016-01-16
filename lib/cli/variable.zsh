@@ -12,11 +12,11 @@ typeset -gx ZPLUG_EXTERNAL=${ZPLUG_EXTERNAL:-$ZPLUG_HOME/init.zsh}
 typeset -gx ZPLUG_USE_CACHE=true
 
 typeset -g ZPLUG_NAME="zplug"
-typeset -g ZPLUG_VERSION="2.0.0"
-typeset -g ZPLUG_CACHE_FILE=$ZPLUG_HOME/.cache
+typeset -g _ZPLUG_VERSION="2.0.0"
+typeset -g _ZPLUG_CACHE_FILE=$ZPLUG_HOME/.cache
 typeset -g ZPLUG_RAWURL="https://git.io/zplug"
-typeset -g ZPLUG_URL="https://github.com/b4b4r07/zplug"
-typeset -g ZPLUG_HELP="usage: zplug [COMMANDS] [OPTIONS]
+typeset -g _ZPLUG_URL="https://github.com/b4b4r07/zplug"
+typeset -g _ZPLUG_HELP="usage: zplug [COMMANDS] [OPTIONS]
   $ZPLUG_NAME is next-generation zsh plugin manager
 
 COMMANDS:
@@ -31,7 +31,7 @@ COMMANDS:
   clean     Remove repositories which is no longer managed
   clear     Remove the cache file
 
-For more information, see also $ZPLUG_URL."
+For more information, see also $_ZPLUG_URL."
 
-typeset -g _zplug_omz_repo="robbyrussell/oh-my-zsh"
-typeset -g _zplug_tag_pattern="(as|of|from|if|dir|file|at|do|frozen|on|commit|nice|ignore)"
+typeset -g _ZPLUG_OHMYZSH="robbyrussell/oh-my-zsh"
+typeset -g _ZPLUG_TAG_PATTERN="(as|of|from|if|dir|file|at|do|frozen|on|commit|nice|ignore)"

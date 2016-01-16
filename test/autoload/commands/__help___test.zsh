@@ -12,7 +12,7 @@
 
 describe "__help__"
     it "help"
-        expect="$ZPLUG_HELP"
+        expect="$_ZPLUG_HELP"
         actual="$(zplug help 2>&1)"
         status_code=$status
         assert.equals "$expect" "$actual"
