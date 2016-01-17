@@ -36,7 +36,7 @@ describe "__releases__"
     it "normal"
         __get_os() { __put "linux\n" }
         repo="peco/peco"
-        expect="Installed ${repo:t} successfully"
+        expect="${repo:t}: Installed successfully"
         actual="$(__releases__ "$repo" 2>&1)"
         status_code=$status
         assert.equals "$expect" "$actual"
@@ -47,7 +47,7 @@ describe "__releases__"
     it "--at option"
         __get_os() { __put "linux\n" }
         repo="peco/peco"
-        expect="Installed ${repo:t} successfully"
+        expect="${repo:t}: Installed successfully"
         actual="$(
         __releases__ \
             --at "v0.3.5" \
@@ -65,7 +65,7 @@ describe "__releases__"
     it "--of option"
         __get_os() { __put "linux\n" }
         repo="peco/peco"
-        expect="Installed ${repo:t} successfully"
+        expect="${repo:t}: Installed successfully"
         actual="$(
         __releases__ \
             --at "v0.3.5" \
@@ -87,7 +87,7 @@ describe "__releases__"
     it "--do option"
         __get_os() { __put "linux\n" }
         repo="peco/peco"
-        expect="Installed ${repo:t} successfully"
+        expect="${repo:t}: Installed successfully"
         actual="$(
         __releases__ \
             --at "v0.3.5" \
