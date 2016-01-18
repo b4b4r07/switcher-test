@@ -2,7 +2,7 @@
 
 __import "print/print"
 
-local is_force=false
+local is_force
 
 while (( $# > 0 ))
 do
@@ -18,10 +18,9 @@ do
     shift
 done
 
-__put "Remove cache file? [y/N]: "
-if $is_force || read -q; then
-    rm -f $_ZPLUG_CACHE_FILE
-    __put "\nRemoved\n"
+if eval ${is_force:-"__put 'Remove cache file? ';read -q;__put '\n'"}; then
+    rm -f "$_ZPLUG_CACHE_FILE"
+    __put "Removed\n"
 else
-    __put "\nCanceled\n"
+    __put "Canceled\n"
 fi

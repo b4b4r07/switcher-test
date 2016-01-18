@@ -37,7 +37,7 @@ typeset -g _ZPLUG_VERSION="2.0.0"
 typeset -g _ZPLUG_CACHE_FILE=$ZPLUG_HOME/.cache
 typeset -g _ZPLUG_URL="https://github.com/b4b4r07/zplug"
 typeset -g _ZPLUG_HELP="usage: zplug [COMMANDS] [OPTIONS]
-  $ZPLUG_NAME is next-generation zsh plugin manager
+  zplug is a next-generation plugin manager for zsh 
 
 COMMANDS:
   help      Show this help message and usage

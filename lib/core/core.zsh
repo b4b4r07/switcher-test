@@ -5,11 +5,30 @@ __is_cli() {
 }
 
 __zpluged() {
-    if [[ $# -eq 0 ]]; then
+    local    arg zplug repo
+    local -A zspec
+
+    autoload -Uz __parser__
+    arg="$1"
+
+    if [[ -z $arg ]]; then
         (( $+zplugs ))
         return $status
     else
-        (( $+zplugs[$1] ))
+        if [[ $arg == $_ZPLUG_OHMYZSH ]]; then
+            for zplug in ${(k)zplugs}
+            do
+                zspec=( ${(@f)"$(__parser__ "$zplug")"} )
+                case $zspec[from] in
+                    "oh-my-zsh")
+                        return 0
+                        ;;
+                esac
+            done
+        else
+            repo="$arg"
+        fi
+        (( $+zplugs[$repo] ))
         return $status
     fi
 }

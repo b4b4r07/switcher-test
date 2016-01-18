@@ -3,15 +3,15 @@
 __import "core/core"
 __import "print/print"
 
-local    k v arg filter repo
-local -i fail=0 num
+local    arg filter repo
+local    is_force is_select=false
 local -a repos args remove_args
 local -A zspec
-local    is_force=false is_select=false
 
 while (( $# > 0 ))
 do
-    case "$1" in
+    arg="$1"
+    case "$arg" in
         --force)
             is_force=true
             ;;
@@ -19,11 +19,11 @@ do
             is_select=true
             ;;
         -*|--*)
-            __die "$1: Unknown option\n"
+            __die "$arg: Unknown option\n"
             return 1
             ;;
         *)
-            args+=("$1")
+            args+=("$arg")
     esac
     shift
 done
@@ -36,72 +36,49 @@ if $is_select; then
     fi
 fi
 
-if (( $#args > 0 )); then
+if (( $#args == 0 )); then
+    repos=( $ZPLUG_HOME/repos/*/*(N-/) )
+    for repo in "${repos[@]}"
+    do
+        if ! __zpluged "${repo:h:t}/${repo:t}"; then
+            remove_args+=("$repo")
+        fi
+    done
+else
     for arg in "${args[@]}"
     do
         zspec=( ${(@f)"$(__parser__ "$arg")"} )
         if [[ -d $zspec[dir] ]]; then
-            __put "- $fg[red]%s$reset_color\n" "$arg"
-            if [[ $zspec[from] == "oh-my-zsh" ]]; then
-                remove_args+=("$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH")
-            else
-                remove_args+=("$ZPLUG_HOME/repos/$arg")
-            fi
+            case "$zspec[from]" in
+                "oh-my-zsh")
+                    remove_args+=("$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH")
+                    ;;
+                *)
+                    remove_args+=("$zspec[dir]")
+                    ;;
+            esac
         else
-            __die "%s: not managed by zplug\n" "$arg"
-            let fail++
+            __die "$arg: no such package\n"
         fi
     done
-
-    if (( $fail > 0 )); then
-        return 1
-    fi
-
-    __put "Remove really? [y/N]: "
-    if $is_force || read -q; then
-        rm -rf "${(u)remove_args[@]}"
-        rmdir "${(u)remove_args[@]:h}" 2>/dev/null
-        __remove_deadlinks $ZPLUG_HOME/bin/*(@N)
-        __put "\nRemoved\n"
-    else
-        __put "\nCanceled\n"
-    fi
-else
-    repos=("${(@f)$(find "$ZPLUG_HOME/repos" -maxdepth 2 -mindepth 2)}")
-
-    # Remove the repository which is used from the candidates
-    for v in "${(@v)zplugs}"
-    do
-        k="${${v##*dir:}%%, *}"
-        if [[ $k =~ $_ZPLUG_OHMYZSH ]]; then
-            k=$ZPLUG_HOME/repos/$_ZPLUG_OHMYZSH
-        fi
-        num="${repos[(i)$k]}"
-        if [[ -n "$num" ]]; then
-            repos[$num]=()
-        fi
-    done
-
-    if [[ -z $repos[1] ]]; then
-        return 0
-    fi
-
-    __put "These repositories are no longer managed by zplug.\n"
-    __put "- $fg[red]%s$reset_color\n" "${repos[@]}"
-    __put "Remove? [y/N]: "
-    if $is_force || read -q; then
-        rm -rf "${repos[@]}"
-        rmdir "${repos[@]:h}" 2>/dev/null
-        __remove_deadlinks $ZPLUG_HOME/bin/*(@N)
-        __put "\nRemoved\n"
-    else
-        __put "\nCanceled\n"
-    fi
 fi
 
+# Remove packages from $ZPLUG_HOME/repos
+for repo in "${remove_args[@]}"
+do
+    __put "${${is_force:+Removed}:-Remove?} $repo "
+    if ${(z)is_force:-"read -q"}; then
+        rm -rf "$repo"
+        rmdir ${repo:h} &>/dev/null
+    fi
+    __put "\n"
+done
+
+# Remove packages from $zplugs
 for repo in ${(k)zplugs}
 do
-    if [[ ! -e ${${zplugs[$repo]##*dir:}%%, *} ]]; then
+    zspec=( ${(@f)"$(__parser__ "$repo")"} )
+    if [[ ! -d $zspec[dir] ]]; then
         unset "zplugs[$repo]"
     fi
 done

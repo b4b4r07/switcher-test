@@ -170,7 +170,7 @@ else
     fi
 
     finish=$SECONDS
-    __put "$ZPLUG_NAME: total wall-time %f sec.\n" $(($finish - $start))
+    __put "zplug: total wall-time %f sec.\n" $(($finish - $start))
 
     return $fail
 fi
