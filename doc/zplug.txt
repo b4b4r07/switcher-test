@@ -1,6 +1,6 @@
 zplug(1)
 ======
-Masaki Ishi(@b4b4r07) b4b4r07@gmail.com
+Masaki Ishiyama (@b4b4r07) b4b4r07@gmail.com
 :man manual: ZPLUG Manual
 
 NAME
