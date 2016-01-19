@@ -59,7 +59,7 @@ describe "__list__"
 
     it "argument repo 3"
         zplugs=("b4b4r07/zplug" "as:plugin")
-        expect="b5: not found"
+        expect="NO SUCH PACKAGE"
         actual="$(zplug list b5 2>&1 | perl -pe 's/\x1b\[[0-9;]*m//g')"
         # status_code=$pipestatus[1]
         assert.match "$expect" "$actual"
