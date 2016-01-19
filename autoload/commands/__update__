@@ -191,12 +191,12 @@ do
     } &
     queue+=($!)
     if (( $#queue % queue_max == 0 )); then
-        wait $queue
+        wait $queue &>/dev/null
         queue=()
     fi
 done
 if (( $#queue > 0 )); then
-    wait $queue
+    wait $queue &>/dev/null
 fi
 queue=()
 

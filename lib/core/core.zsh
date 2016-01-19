@@ -34,21 +34,25 @@ __zpluged() {
 }
 
 __get_autoload_dirs() {
-    reply=(
-    "$ZPLUG_ROOT/autoload/commands"
-    "$ZPLUG_ROOT/autoload/utils"
-    )
+    if (( $# > 0 )); then
+        reply=("$@")
+    else
+        reply=(
+        "$ZPLUG_ROOT/autoload/commands"
+        "$ZPLUG_ROOT/autoload/utils"
+        )
+    fi
 }
 
 __get_autoload_paths() {
     local -a fs
-    __get_autoload_dirs
+    __get_autoload_dirs "$@"
     fs=( "${^reply[@]}"/__*(N-.) )
     (( $#fs > 0 )) && reply=( "${fs[@]}" )
 }
 
 __get_autoload_files() {
-    __get_autoload_paths
+    __get_autoload_paths "$@"
     (( $#reply > 0 )) && reply=( "${reply[@]:t}" )
 }
 
