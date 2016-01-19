@@ -36,8 +36,11 @@ get_untested_files() {
 
 show_untested_files() {
     get_untested_files
-    printf "- %s\n" ${fail[@]}
-    printf "\n%d/%d (%3.1f%%)\n" $#pass $all $(($#pass / $all * 100))
+    if (( $#fail > 0 )); then
+        printf "- %s\n" ${fail[@]}
+        printf "\n"
+    fi
+    printf "%d/%d (%3.1f%%)\n" $#pass $all $(($#pass / $all * 100))
 }
 
 if $is_create; then
@@ -45,9 +48,8 @@ if $is_create; then
     for f in "${fail[@]}"
     do
         f="test/${f:r}_test.zsh"
-        echo mkdir -p "${f:h}"
-        echo touch "$f"
-        # echo "#!/bin/zsh" >"$f"
+        mkdir -p "${f:h}"
+        echo "#!/bin/zsh" >"$f"
     done
 else
     show_untested_files
