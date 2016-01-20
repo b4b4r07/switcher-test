@@ -34,7 +34,7 @@ typeset -gx ZPLUG_EXTERNAL=${ZPLUG_EXTERNAL:-$ZPLUG_HOME/init.zsh}
 typeset -gx ZPLUG_USE_CACHE=true
 
 typeset -g _ZPLUG_VERSION="2.0.0"
-typeset -g _ZPLUG_CACHE_FILE=$ZPLUG_HOME/.cache
+typeset -g _ZPLUG_CACHE_FILE="$ZPLUG_HOME/.cache"
 typeset -g _ZPLUG_URL="https://github.com/b4b4r07/zplug"
 typeset -g _ZPLUG_HELP="usage: zplug [COMMANDS] [OPTIONS]
   zplug is a next-generation plugin manager for zsh 
@@ -44,7 +44,7 @@ COMMANDS:
   version   Show version information
   install   Install described items in parallel
   update    Update items in parallel
-  load      Source plugins to current shell and add $ZPLUG_HOME/bin to \$PATH
+  load      Source plugins to current shell and add \$ZPLUG_HOME/bin to \$PATH
   list      Show all of the zplugs in the current shell
   check     Check whether an update or installation is available
   status    Check if remote branch is up-to-date

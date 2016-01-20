@@ -27,14 +27,14 @@ describe "lib/core/core.zsh"
 
     it "__get_autoload_paths"
         __get_autoload_paths
-        expect=17
+        expect=18
         actual=$#reply
         assert.equals "$expect" "$actual"
     end
 
     it "__get_autoload_files"
         __get_autoload_files
-        expect=17
+        expect=18
         actual=$#reply
         expects=(
         __check__
@@ -48,6 +48,7 @@ describe "lib/core/core.zsh"
         __update__
         __version__
         __add__
+        __arguments__
         __clone__
         __external__
         __parser__

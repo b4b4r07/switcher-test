@@ -3,7 +3,7 @@
 __import "core/core"
 
 local    arg
-local -a cmds udcs
+local -a cmds ud_cmds
 
 arg="$1"
 if [[ -z $arg ]]; then
@@ -11,15 +11,15 @@ if [[ -z $arg ]]; then
     return 1
 fi
 
-udcs=( ${^path}/zplug-*(N-.:t:gs:zplug-:) )
-if  [[ -n ${(M)udcs:#$arg} ]]; then
+ud_cmds=( ${^path}/zplug-*(N-.:t:gs:zplug-:) )
+if  [[ -n ${(M)ud_cmds:#$arg} ]]; then
     eval "$commands[zplug-$arg]"
     return $status
 fi
 
 __get_autoload_files \
     "$ZPLUG_ROOT/autoload/commands"
-reply+=("${udcs[@]}")
+reply+=("${ud_cmds[@]}")
 cmds=(
 ${(@f)"$(awk \
     -f "$ZPLUG_ROOT/src/share/fuzzy.awk" \
@@ -34,7 +34,7 @@ case $#cmds in
         return 1
         ;;
     1)
-        __die "WARNING: You called a Git command named '%s', which does not exist.\n" "$arg"
+        __die "WARNING: You called a zplug command named '%s', which does not exist.\n" "$arg"
         __die "Continuing under the assumption that you meant '%s'\n" "$cmds"
         zplug "$cmds"
         return $status
